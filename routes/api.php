@@ -16,28 +16,37 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token, Authorization, Accept,charset,boundary,Content-Length');
+header('Access-Control-Allow-Origin: *');
 
+// User Routes
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::middleware(['auth:api'])->group(function () {
+});
 
+// Vendor Routes
 Route::middleware('auth:vendor')->get('/vendor', function (Request $request) {
     return $request->user();
 });
+Route::middleware(['auth:vendor'])->group(function () {
+});
 
+
+// Admin routes
 Route::middleware('auth:admin')->get('/admin', function (Request $request) {
     return $request->user();
 });
+Route::middleware(['auth:admin'])->group(function () {
+});
 
+// Auth ROUTES
 Route::get('login', [UserController::class, 'login']);
 Route::get('register', [UserController::class, 'register']);
 
+
+// Social Login routes
 Route::get('/auth/{provider}/redirect', [SocialLoginController::class, 'redirect']);
 Route::get('/auth/{provider}/callback', [SocialLoginController::class, 'callback']);
-
-Route::middleware(['auth:api'])->group(function () {
-});
-Route::middleware(['auth:vendor'])->group(function () {
-});
-Route::middleware(['auth:admin'])->group(function () {
-});
