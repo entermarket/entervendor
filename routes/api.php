@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -42,9 +44,13 @@ Route::middleware('auth:admin')->get('/admin', function (Request $request) {
 Route::middleware(['auth:admin'])->group(function () {
 });
 
-// Auth ROUTES
-Route::get('login', [UserController::class, 'login']);
-Route::get('register', [UserController::class, 'register']);
+// Registration routes
+
+Route::post('user/register', [UserController::class, 'register']);
+
+Route::ppost('vendor/register', [VendorController::class, 'register']);
+
+Route::post('admin/register', [AdminController::class, 'register']);
 
 
 // Social Login routes
