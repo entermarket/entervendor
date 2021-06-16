@@ -48,7 +48,7 @@ Route::middleware(['auth:admin'])->group(function () {
 
 Route::post('user/register', [UserController::class, 'register']);
 
-Route::ppost('vendor/register', [VendorController::class, 'register']);
+Route::post('vendor/register', [VendorController::class, 'register']);
 
 Route::post('admin/register', [AdminController::class, 'register']);
 
