@@ -57,4 +57,34 @@ class User extends Authenticatable
     {
         return $this->hasMany(LinkedSocialAccount::class);
     }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+    public function otp()
+    {
+        return $this->hasOne(Otp::class);
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    public function latestOrder()
+    {
+        return $this->hasOne(Order::class)->latestOfMany();
+    }
+    public function oldestOrder()
+    {
+        return $this->hasOne(Order::class)->oldestOfMany();
+    }
+    public function largestOrder()
+    {
+        return $this->hasOne(Order::class)->ofMany('total_amount', 'max');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Order::class);
+    }
 }
