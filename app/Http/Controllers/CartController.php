@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -12,34 +13,34 @@ class CartController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public $cartservice;
+    public $user;
+
+    public function __construct(CartService $cartservice)
+    {
+        $this->cartservice = $cartservice;
+        $this->user = auth('api')->user();
+    }
     public function index()
     {
-        //
+        return $this->cartservice->getCart($this->user);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
 
-        $user = auth('api')->user();
-        $user->cart()->firstOrCreate(['product_id' => $request->product_id], [
-            'quantity' => 1, 'price' => 1, 'total_amount' => 1
-        ]);
+
+
+        return  $this->cartservice->add(
+            $this->user,
+            $request->store_name,
+            $request->product_name,
+            $request->brand_name,
+            $request->price,
+            $request->quantity,
+            $request->description,
+            $request->image
+        );
     }
 
     /**
@@ -50,18 +51,13 @@ class CartController extends Controller
      */
     public function show(Cart $cart)
     {
-        //
+        return $cart;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Cart  $cart
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Cart $cart)
+    public function gettotal()
     {
-        //
+
+        return $this->cartservice->total($this->user);
     }
 
     /**
@@ -73,7 +69,7 @@ class CartController extends Controller
      */
     public function update(Request $request, Cart $cart)
     {
-        //
+        return $this->cartservice->update($request->action, $cart);
     }
 
     /**
@@ -84,6 +80,10 @@ class CartController extends Controller
      */
     public function destroy(Cart $cart)
     {
-        //
+        return  $this->cartservice->remove($cart);
+    }
+    public function destroyall()
+    {
+        return  $this->cartservice->clearcart($this->user);
     }
 }

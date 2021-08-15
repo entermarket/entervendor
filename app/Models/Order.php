@@ -11,9 +11,8 @@ class Order extends Model
     use HasFactory, Notifiable;
 
     protected $fillable = [
+        'order_no',
         'status',
-        'sub_total',
-        'item_discount',
         'total_amount',
         'tax',
         'shipping_charges',
@@ -29,5 +28,13 @@ class Order extends Model
     public function transaction()
     {
         return $this->hasMany(Transaction::class);
+    }
+    public function orderhistories()
+    {
+        return $this->hasMany(OrderHistory::class);
+    }
+    public function orderinfo()
+    {
+        return $this->hasMany(OrderInformation::class);
     }
 }

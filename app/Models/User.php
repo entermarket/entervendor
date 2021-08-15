@@ -70,6 +70,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
+    public function orderhistories()
+    {
+        return $this->hasMany(OrderHistory::class);
+    }
+    public function orderinfo()
+    {
+        return $this->hasMany(OrderInformation::class);
+    }
     public function latestOrder()
     {
         return $this->hasOne(Order::class)->latestOfMany();

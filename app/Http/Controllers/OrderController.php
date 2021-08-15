@@ -3,39 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public $user;
+    public $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        $this->user = auth('api')->user();
+        $this->orderService = $orderService;
+    }
+
     public function index()
     {
-        //
+        return $this->user->orders()->get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+
+        return $this->orderService->create(
+            $this->user,
+            $request->tax ? $request->tax : 0,
+            $request->shipping_charges ? $request->shipping_charges : 0,
+            $request->promo,
+            $request->discount ? $request->discount : 0
+        );
     }
 
     /**
@@ -46,7 +43,8 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        //
+
+        return $order->load('orderhistories');
     }
 
     /**

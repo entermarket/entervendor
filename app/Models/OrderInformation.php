@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class OrderInformation extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'firstName',
+        'lastName',
+        'shipping_method',
+        'shipping_address',
+        'email',
+        'phoneNumber',
+        'extra_instruction',
+        'payment_method',
+        'user_id',
+        'order_id'
+    ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+}

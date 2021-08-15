@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\TransactionController;
@@ -32,12 +34,43 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware(['auth:api'])->group(function () {
+
+    Route::apiResource('user/orders', OrderController::class);
+    Route::apiResource('user/order/histories', OrderHistoryController::class);
+    Route::apiResource('user/carts', CartController::class);
+    Route::apiResource('user/transactions', TransactionController::class);
+    Route::get('users/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
+    Route::get('total', [CartController::class, 'gettotal']);
+    Route::get('user/notifications', [NotificationController::class, 'getnotifications']);
+    Route::get('user/notifications/unread', [NotificationController::class, 'unreadnotifications']);
+    Route::get('user/notifications/mark', [NotificationController::class, 'markreadnotifications']);
+    Route::get('user/notifications/{id}/mark', [NotificationController::class, 'marksinglenotification']);
+    Route::delete('user/notifications/delete', [NotificationController::class, 'destroy']);
 });
+
+
+// Registration routes
+
+Route::post('users/register', [UserController::class, 'register']);
+
+Route::post('users/login', [UserController::class, 'login']);
+Route::get('users/logout', [UserController::class, 'logout'])->name('logout.user');
+Route::post('users/forgot-password', [UserController::class, 'postEmail']);
+Route::post('users/update-password', [UserController::class, 'updatePassword']);
+Route::apiResource('otp', OtpController::class);
+
+
+
+
+Route::post('vendor/register', [VendorController::class, 'register']);
+Route::post('admin/register', [AdminController::class, 'register']);
 
 // Vendor Routes
 Route::middleware('auth:vendor')->get('/vendor', function (Request $request) {
     return $request->user();
 });
+
+
 Route::middleware(['auth:vendor'])->group(function () {
 });
 
@@ -49,23 +82,6 @@ Route::middleware('auth:admin')->get('/admin', function (Request $request) {
 Route::middleware(['auth:admin'])->group(function () {
 });
 
-// Registration routes
-
-Route::post('users/register', [UserController::class, 'register']);
-Route::get('users/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
-Route::post('users/login', [UserController::class, 'login']);
-Route::get('users/logout', [UserController::class, 'logout'])->name('logout.user');
-
-
-
-
-Route::post('vendor/register', [VendorController::class, 'register']);
-Route::post('admin/register', [AdminController::class, 'register']);
-
-Route::apiResource('orders', OrderController::class);
-Route::apiResource('carts', CartController::class);
-Route::apiResource('transactions', TransactionController::class);
-Route::apiResource('otp', OtpController::class);
 
 // Social Login routes
 Route::get('/auth/{provider}/redirect', [SocialLoginController::class, 'redirect']);
