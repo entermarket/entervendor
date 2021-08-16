@@ -38,9 +38,12 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('user/orders', OrderController::class);
     Route::apiResource('user/order/histories', OrderHistoryController::class);
     Route::apiResource('user/carts', CartController::class);
+    Route::get('total', [CartController::class, 'gettotal']);
+    Route::get('user/clear/cart', [CartController::class, 'destroyall']);
     Route::apiResource('user/transactions', TransactionController::class);
     Route::get('users/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
-    Route::get('total', [CartController::class, 'gettotal']);
+
+
     Route::get('user/notifications', [NotificationController::class, 'getnotifications']);
     Route::get('user/notifications/unread', [NotificationController::class, 'unreadnotifications']);
     Route::get('user/notifications/mark', [NotificationController::class, 'markreadnotifications']);

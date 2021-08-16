@@ -19,19 +19,31 @@ class OrderController extends Controller
 
     public function index()
     {
-        return $this->user->orders()->get();
+        return $this->user->orders()->with('orderhistories', 'orderinfo')->get();
     }
 
 
     public function store(Request $request)
     {
 
+
         return $this->orderService->create(
             $this->user,
-            $request->tax ? $request->tax : 0,
             $request->shipping_charges ? $request->shipping_charges : 0,
             $request->promo,
-            $request->discount ? $request->discount : 0
+            $request->commission,
+            $request->discount ? $request->discount : 0,
+            $request->shipping_method,
+            $request->shipping_address,
+            $request->city,
+            $request->state,
+            $request->pickup_location,
+            $request->phoneNumber,
+            $request->extra_instruction,
+            $request->payment_method,
+            $request->title,
+            $request->isScheduled,
+            $request->schedule_time
         );
     }
 
@@ -44,7 +56,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
 
-        return $order->load('orderhistories');
+        return $order->load('orderhistories', 'orderinfo');
     }
 
     /**
@@ -78,6 +90,6 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        //
+        return $this->orderService->remove($order);
     }
 }

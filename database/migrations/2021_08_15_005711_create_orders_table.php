@@ -19,6 +19,7 @@ class CreateOrdersTable extends Migration
             $table->string('status')->default('pending');;
             $table->integer('total_amount');
             $table->integer('tax')->default(0);
+            $table->integer('commission')->default(0);
             $table->integer('shipping_charges')->default(0);
             $table->string('promo')->nullable();
             $table->integer('discount')->default(0);

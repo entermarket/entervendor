@@ -15,7 +15,10 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('payment_code');
+            $table->string('reference');
+            $table->string('message');
+            $table->string('trxref');
+            $table->integer('amount');
             $table->string('type');
             $table->string('mode');
             $table->string('status');

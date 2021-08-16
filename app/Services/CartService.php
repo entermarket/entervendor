@@ -37,14 +37,8 @@ class CartService
       ->first();
 
     if (is_null($newcart)) {
-      $user->cart()->create($cartItems);
-      return response()->json(
-        [
-          'status' => true,
-          'message' => 'Cart created'
-        ],
-        200
-      );
+      $item =  $user->cart()->create($cartItems);
+      return $item;
     } else {
       $newcart->store_name = $store_name;
       $newcart->brand_name = $brand_name;
@@ -52,13 +46,7 @@ class CartService
       $newcart->quantity =  $newcart->quantity + $quantity;
       $newcart->save();
 
-      return response()->json(
-        [
-          'status' => true,
-          'message' => 'Cart updated'
-        ],
-        200
-      );
+      return $newcart;
     }
   }
   public function getCart($user)
@@ -153,7 +141,7 @@ class CartService
   {
     $cart  = $this->getCart($user);
     $total =  $cart->reduce(function ($total, $item) {
-      return $total += $item->total;
+      return $total += $item->subtotal;
     });
     return $total;
   }

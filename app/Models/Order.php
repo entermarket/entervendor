@@ -15,11 +15,13 @@ class Order extends Model
         'status',
         'total_amount',
         'tax',
+        'commission',
         'shipping_charges',
         'promo',
         'discount',
         'grand_total',
-        'user_id'
+        'user_id',
+        'title', 'isScheduled', 'schedule_time'
     ];
     public function user()
     {

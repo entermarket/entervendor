@@ -18,10 +18,13 @@ class CreateOrderInformationTable extends Migration
             $table->string('firstName');
             $table->string('lastName');
             $table->string('shipping_method')->nullable();
-            $table->text('shipping_address');
+            $table->text('shipping_address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
             $table->string('email');
             $table->string('phoneNumber');
-            $table->text('extra_instruction');
+            $table->string('pickup_location')->nullable();
+            $table->text('extra_instruction')->nullable();
             $table->string('payment_method')->nullable();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete()->cascadeOnUpdate();
