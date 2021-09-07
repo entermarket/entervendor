@@ -52,14 +52,28 @@ class CartService
   public function getCart($user)
   {
     $cart = $user->cart()->get();
+
     $mappedcart = $cart->map(function ($a) {
       $a->subtotal = $a->quantity * $a->price;
       return $a;
     });
-    return $mappedcart;
+    $total =  $mappedcart->reduce(function ($total, $item) {
+      return $total += $item->subtotal;
+    });
+
+    $commission = 0;
+    $shipping = 0;
+    return [
+      'cart' => $mappedcart,
+      'total' => $total,
+      'commission' => $commission,
+      'shipping' => $shipping
+
+    ];
   }
   public function update($action, $cart)
   {
+
 
     try {
       if ($action === 'plus') {
@@ -67,21 +81,17 @@ class CartService
         $cart->save();
       }
       if ($action === 'subtract') {
-        $cart->quantity =  $cart->quantity - 1;
+
+
         if ($cart->quantity > 1) {
+          $cart->quantity =  $cart->quantity - 1;
           $cart->save();
         } else {
           $cart->delete();
         }
       }
 
-      return response()->json(
-        [
-          'status' => true,
-          'message' => 'cart updated'
-        ],
-        200
-      );
+      return $cart;
     } catch (\Throwable $th) {
       return response()->json(
         [
@@ -95,14 +105,14 @@ class CartService
   public function remove($cart)
   {
     try {
-      $cart->delete();
-      return response()->json(
-        [
-          'status' => true,
-          'message' => 'item deleted'
-        ],
-        200
-      );
+      if ($cart->quantity > 1) {
+        $cart->quantity =  $cart->quantity - 1;
+        $cart->save();
+        return $cart;
+      } else {
+        $cart->delete();
+        return;
+      }
     } catch (\Throwable $th) {
 
       return response()->json(
@@ -139,10 +149,24 @@ class CartService
 
   public function total($user)
   {
-    $cart  = $this->getCart($user);
-    $total =  $cart->reduce(function ($total, $item) {
+    $cart = $user->cart()->get();
+
+    $mappedcart = $cart->map(function ($a) {
+      $a->subtotal = $a->quantity * $a->price;
+      return $a;
+    });
+    $total =  $mappedcart->reduce(function ($total, $item) {
       return $total += $item->subtotal;
     });
-    return $total;
+
+    $commission = 0;
+    $shipping = 0;
+    return [
+
+      'total' => $total,
+      'commission' => $commission,
+      'shipping' => $shipping
+
+    ];
   }
 }

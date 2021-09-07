@@ -23,6 +23,7 @@ class CartController extends Controller
     }
     public function index()
     {
+
         return $this->cartservice->getCart($this->user);
     }
 
@@ -69,6 +70,7 @@ class CartController extends Controller
      */
     public function update(Request $request, Cart $cart)
     {
+
         return $this->cartservice->update($request->action, $cart);
     }
 

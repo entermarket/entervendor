@@ -7,9 +7,12 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderHistoryController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\SocialLoginController;
+use App\Http\Controllers\StoreController;
+use App\Http\Controllers\StoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,10 +41,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('user/orders', OrderController::class);
     Route::apiResource('user/order/histories', OrderHistoryController::class);
     Route::apiResource('user/carts', CartController::class);
-    Route::get('total', [CartController::class, 'gettotal']);
+    Route::get('get/total', [CartController::class, 'gettotal']);
     Route::get('user/clear/cart', [CartController::class, 'destroyall']);
     Route::apiResource('user/transactions', TransactionController::class);
-    Route::get('users/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
+    Route::get('user/profile', [UserController::class, 'viewProfile'])->name('profile.user');
 
 
     Route::get('user/notifications', [NotificationController::class, 'getnotifications']);
@@ -50,6 +53,15 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('user/notifications/{id}/mark', [NotificationController::class, 'marksinglenotification']);
     Route::delete('user/notifications/delete', [NotificationController::class, 'destroy']);
 });
+//Store routes
+Route::apiResource('stores', StoreController::class);
+
+//Wishlist routes
+Route::apiResource('wishlists', WishlistController::class);
+
+//Story routes
+Route::apiResource('stories', StoryController::class);
+Route::get('removestories', [StoryController::class, 'remove']);
 
 
 // Registration routes

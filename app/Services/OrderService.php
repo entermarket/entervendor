@@ -60,10 +60,11 @@ class OrderService
       $schedule_time
     ) {
       $cartservice = new CartService;
-      $usercart =  $cartservice->getCart($user);
-      $total = $cartservice->total($user);
+      $usercart =  $cartservice->getCart($user)['cart'];
+      $total = $cartservice->total($user)['total'];
       $order_no = $this->generateUniqueCode();
-      $grand_total = ($total + $shipping_charges + $commission) - $discount;
+
+      $grand_total = (intval($total) + intval($shipping_charges) + intval($commission)) - $discount;
 
 
       //create order
@@ -115,7 +116,7 @@ class OrderService
           'status' => true,
           'message' => 'order created'
         ],
-        200
+        201
       );
     });
     // } catch (\Throwable $th) {
