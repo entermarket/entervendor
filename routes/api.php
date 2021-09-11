@@ -67,7 +67,6 @@ Route::get('removestories', [StoryController::class, 'remove']);
 // Registration routes
 
 Route::post('users/register', [UserController::class, 'register']);
-
 Route::post('users/login', [UserController::class, 'login']);
 Route::get('users/logout', [UserController::class, 'logout'])->name('logout.user');
 Route::post('users/forgot-password', [UserController::class, 'postEmail']);

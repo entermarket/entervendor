@@ -29,45 +29,57 @@ class UserController extends Controller
     }
     public function register(Request $request)
     {
-        // try {
 
-        $validated =  $request->validate([
-            'firstName' => 'required',
-            'lastName' => 'required',
-            'email' => 'required|unique:users',
-            'password' => 'required|min:6',
-            'phoneNumber' => 'required|unique:users'
-        ]);
+        try {
 
-        User::create([
-            'firstName' => $request->firstName,
-            'lastName' => $request->lastName,
-            'email' => $request->email,
-            'address' => $request->address,
-            'dob' => $request->dob,
-            'gender' => $request->gender,
-            'city' => $request->city,
-            'state' => $request->state,
-            'country' => $request->country,
-            'phoneNumber' => $request->phoneNumber,
-            'profileImage' => $request->profileImage,
-            'password' => Hash::make($request->password)
-
-        ]);
+            $validator = Validator::make($request->all(), [
+                'firstName' => 'bail|required',
+                'lastName' => 'bail|required',
+                'email' => 'bail|required|unique:users',
+                'password' => 'required|min:6',
+                'phoneNumber' => 'bail|required|unique:users'
+            ]);
 
 
-        $responseMessage = "registration successful";
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'something went wrong',
+                    'error' => $validator->messages()->toArray()
+                ], 422);
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => $responseMessage
-        ], 200);
-        // } catch (\Throwable $th) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'something went wrong'
-        //     ], 200);
-        // }
+            User::create([
+                'firstName' => $request->firstName,
+                'lastName' => $request->lastName,
+                'email' => $request->email,
+                'address' => $request->address,
+                'dob' => $request->dob,
+                'gender' => $request->gender,
+                'city' => $request->city,
+                'state' => $request->state,
+                'country' => $request->country,
+                'phoneNumber' => $request->phoneNumber,
+                'profileImage' => $request->profileImage,
+                'password' => Hash::make($request->password)
+
+            ]);
+
+
+            $responseMessage = "registration successful";
+
+            return response()->json([
+                'success' => true,
+                'message' => $responseMessage
+            ], 201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'something went wrong',
+                'error' => $th
+
+            ], 400);
+        }
     }
     public function login(Request $request)
     {
@@ -75,7 +87,6 @@ class UserController extends Controller
             'email' => 'required|string',
             'password' => 'required|min:6',
         ]);
-
 
         if ($validator->fails()) {
             return response()->json([
