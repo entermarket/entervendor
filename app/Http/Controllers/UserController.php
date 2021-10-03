@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\PasswordResetMail;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Auth;
-use Validator;
-use Mail;
 use DB;
+use Auth;
+use Mail;
+use Validator;
 use Carbon\Carbon;
+use App\Models\Otp;
+use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Mail\PasswordResetMail;
+use Illuminate\Support\Facades\Hash;
 
 
 class UserController extends Controller
@@ -24,7 +25,7 @@ class UserController extends Controller
     public function __construct()
     {
 
-        $this->middleware("auth:api", ["except" => ["login", "register", "postEmail", "updatePassword"]]);
+        $this->middleware("auth:api", ["except" => ["login", "register", "postEmail", "updatePassword", "changePasswordByOtp", "createotp"]]);
         $this->user = new User;
     }
     public function register(Request $request)
@@ -211,6 +212,77 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function createotp(Request $request)
+    {
+
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user =  User::where('email', $request->email)->first();
+
+        if (is_null($user)) {
+
+            return response([
+                'status' => false,
+                'message' => 'Email not found'
+            ], 500);
+        }
+        $code = mt_rand(100000, 999999);
+
+        $otp = Otp::updateOrCreate(
+            ['user_id' => $user->id],
+            ['code' => $code]
+        );
+        $otp->save();
+        $maildata = [
+            'code' => $code
+        ];
+
+
+        // Mail::to($user)->send(new OtpReset($maildata));
+        return response()->json([
+            "success" => true,
+            "message" => 'otp sent to email'
+
+        ], 200);
+    }
+
+    public function changePasswordByOtp(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|min:6|max:6',
+            'password' => 'required|string|min:6',
+            'confirmpassword' => 'required',
+        ]);
+        $user_id  = Otp::where('code', $request->code)->value('user_id');
+
+        if (!$user_id) {
+            return response()->json([
+                "success" => false,
+                "message" => 'Invalid code'
+
+            ], 200);
+        }
+
+        $user = User::find($user_id);
+        $oldpassword = $user->password;
+        $checkpassword = Hash::check($request->password, $oldpassword);
+        if ($checkpassword) {
+            return response()->json([
+                "success" => false,
+                "message" => 'identical password'
+
+            ], 200);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        Otp::where('code', $request->code)->first()->delete();
+
+        return response()->json('Password changed');
+    }
     public function logout()
     {
 

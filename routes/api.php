@@ -100,3 +100,8 @@ Route::middleware(['auth:admin'])->group(function () {
 // Social Login routes
 Route::get('/auth/{provider}/redirect', [SocialLoginController::class, 'redirect']);
 Route::post('/auth/{provider}/callback', [SocialLoginController::class, 'callback']);
+
+
+// Mobile Password
+Route::post('generate/otp', [UserController::class, 'createotp']);
+Route::post('password/reset', [UserController::class, 'changePasswordByOtp']);

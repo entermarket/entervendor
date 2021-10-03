@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 class Otp extends Model
 {
     use HasFactory, Notifiable;
-    protected $fillable = ['user_id', 'otp'];
+    protected $fillable = ['user_id', 'code'];
 
     public function user()
     {

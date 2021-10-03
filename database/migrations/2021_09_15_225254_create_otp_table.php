@@ -16,7 +16,7 @@ class CreateOtpTable extends Migration
         Schema::create('otp', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('otp');
+            $table->string('code');
             $table->timestamps();
         });
     }
