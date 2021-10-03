@@ -105,3 +105,14 @@ Route::post('/auth/{provider}/callback', [SocialLoginController::class, 'callbac
 // Mobile Password
 Route::post('generate/otp', [UserController::class, 'createotp']);
 Route::post('password/reset', [UserController::class, 'changePasswordByOtp']);
+
+
+//Bank Details
+
+Route::get('get/banks', [BankDetailController::class, 'getbanks']);
+Route::get('get/bank/detail', [BankDetailController::class, 'getbankdetail']);
+Route::apiResource('bank/details', BankDetailController::class);
+Route::post('transaction/initiate', [BankDetailController::class, 'makepayment']);
+
+Route::get('transaction/verify/{reference}', [BankDetailController::class, 'verifytransaction']);
+Route::post('transaction/verify', [BankDetailController::class, 'transactionevent']);
