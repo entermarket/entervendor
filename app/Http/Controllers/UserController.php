@@ -9,6 +9,7 @@ use Validator;
 use Carbon\Carbon;
 use App\Models\Otp;
 use App\Models\User;
+use App\Mail\OtpReset;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\PasswordResetMail;
@@ -240,7 +241,7 @@ class UserController extends Controller
         ];
 
 
-        // Mail::to($user)->send(new OtpReset($maildata));
+        Mail::to($user)->send(new OtpReset($maildata));
         return response()->json([
             "success" => true,
             "message" => 'otp sent to email'

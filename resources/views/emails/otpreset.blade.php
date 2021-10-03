@@ -2,9 +2,9 @@
 
     You have requested a password change, use the OTP code below
 
-    # {{ $code }}
+    {{ $code }}
 
 
-    Thanks,<br>
+    Thanks,
     {{ config('app.name') }}
 @endcomponent
