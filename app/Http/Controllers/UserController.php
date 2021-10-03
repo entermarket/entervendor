@@ -26,7 +26,7 @@ class UserController extends Controller
     public function __construct()
     {
 
-        $this->middleware("auth:api", ["except" => ["login", "register", "postEmail", "updatePassword", "changePasswordByOtp", "createotp"]]);
+        $this->middleware("auth:api", ["except" => ["login", "register", "show", "postEmail", "updatePassword", "changePasswordByOtp", "createotp"]]);
         $this->user = new User;
     }
     public function register(Request $request)
@@ -123,6 +123,10 @@ class UserController extends Controller
         }
     }
 
+    public function show(User $user)
+    {
+        return $user;
+    }
 
     public function postEmail(Request $request)
     {
@@ -288,6 +292,7 @@ class UserController extends Controller
     {
 
         //auth()->user()->logout();
+
         $user = Auth::guard("api")->user()->token();
         $user->revoke();
         $responseMessage = "successfully logged out";

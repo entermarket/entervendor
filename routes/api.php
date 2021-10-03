@@ -64,7 +64,7 @@ Route::apiResource('stories', StoryController::class);
 Route::get('removestories', [StoryController::class, 'remove']);
 
 
-// Registration routes
+// Auth routes
 
 Route::post('users/register', [UserController::class, 'register']);
 Route::post('users/login', [UserController::class, 'login']);
@@ -74,7 +74,7 @@ Route::post('users/update-password', [UserController::class, 'updatePassword']);
 Route::apiResource('otp', OtpController::class);
 
 
-
+Route::apiResource('users', UserController::class);
 
 Route::post('vendor/register', [VendorController::class, 'register']);
 Route::post('admin/register', [AdminController::class, 'register']);
