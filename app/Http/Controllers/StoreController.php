@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StoreService;
+use App\Models\Store;
 use Illuminate\Http\Request;
+use App\Services\StoreService;
 
 class StoreController extends Controller
 {
@@ -28,6 +29,11 @@ class StoreController extends Controller
     public function show(Store $store)
     {
         return $store;
+    }
+
+    public function getstorecategories(Store $store)
+    {
+        return $store->categories()->get();
     }
     public function destroy(Store $store)
     {

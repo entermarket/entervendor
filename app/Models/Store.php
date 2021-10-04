@@ -18,4 +18,13 @@ class Store extends Model
         'db_username',
         'db_password'
     ];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
+    }
 }

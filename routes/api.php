@@ -1,20 +1,23 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderHistoryController;
-use App\Http\Controllers\OtpController;
-use App\Http\Controllers\SocialLoginController;
-use App\Http\Controllers\StoreController;
-use App\Http\Controllers\StoryController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\VendorController;
-use App\Http\Controllers\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OtpController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\StoreController;
+use App\Http\Controllers\StoryController;
+use App\Http\Controllers\VendorController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\BankDetailController;
+use App\Http\Controllers\SocialLoginController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\OrderHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,9 +41,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::middleware(['auth:api'])->group(function () {
 
-    Route::apiResource('user/orders', OrderController::class);
     Route::apiResource('user/order/histories', OrderHistoryController::class);
-    Route::apiResource('user/carts', CartController::class);
+    Route::apiResource('user/orders', OrderController::class);
+    Route::apiResource('user/cart', CartController::class);
     Route::get('get/total', [CartController::class, 'gettotal']);
     Route::get('user/clear/cart', [CartController::class, 'destroyall']);
     Route::apiResource('user/transactions', TransactionController::class);
@@ -53,10 +56,23 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('user/notifications/{id}/mark', [NotificationController::class, 'marksinglenotification']);
     Route::delete('user/notifications/delete', [NotificationController::class, 'destroy']);
 });
+
+
 //Store routes
+Route::get('store/categories/{store}', [StoreController::class, 'getstorecategories']);
 Route::apiResource('stores', StoreController::class);
 
+// categories
+Route::apiResource('categories', CategoryController::class);
+
+// Products
+
+Route::post('store/products', [ProductController::class, 'storeproducts']);
+Route::post('store/products/all', [ProductController::class, 'allstoreproducts']);
+Route::apiResource('products', ProductController::class);
+
 //Wishlist routes
+Route::post('clear/wishlists', [WishlistController::class, 'destroyall']);
 Route::apiResource('wishlists', WishlistController::class);
 
 //Story routes

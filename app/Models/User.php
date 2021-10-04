@@ -102,6 +102,6 @@ class User extends Authenticatable
 
     public function transactions()
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Transaction::class);
     }
 }

@@ -50,5 +50,6 @@ class NotificationController extends Controller
   public function destroy()
   {
     $this->user->notifications()->delete();
+    return response()->json('cleared');
   }
 }

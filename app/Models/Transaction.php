@@ -10,7 +10,10 @@ class Transaction extends Model
 {
     use HasFactory, Notifiable;
     protected $fillable = [
-        'payment_code',
+        'reference',
+        'message',
+        'trxref',
+        'amount',
         'type',
         'mode',
         'status',

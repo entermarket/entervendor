@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use App\Services\CartService;
+use App\Models\Store;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Services\CartService;
 
 class CartController extends Controller
 {
@@ -30,17 +32,19 @@ class CartController extends Controller
     public function store(Request $request)
     {
 
-
+        $store = Store::find($request->store_id);
+        $product = Product::find($request->product_id);
+        $quantity =  1;
 
         return  $this->cartservice->add(
             $this->user,
-            $request->store_name,
-            $request->product_name,
-            $request->brand_name,
-            $request->price,
-            $request->quantity,
-            $request->description,
-            $request->image
+            $store->name,
+            $product->product_name,
+            $product->product_name,
+            $product->price,
+            $quantity,
+            $product->product_desc,
+            $product->image
         );
     }
 
@@ -70,6 +74,7 @@ class CartController extends Controller
      */
     public function update(Request $request, Cart $cart)
     {
+
 
         return $this->cartservice->update($request->action, $cart);
     }

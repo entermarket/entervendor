@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\TransactionSuccessful;
 use App\Models\Order;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -18,14 +19,7 @@ class BankDetailController extends Controller
         $this->api_key = config('services.paystack.sk');
     }
 
-    /**  @params
-     * $tribe_name
-     * $bank_name
-     * $account_no
-     * $bank_code
 
-
-     */
     public function store($request)
     {
         $request->validate(
@@ -90,45 +84,49 @@ class BankDetailController extends Controller
     public function makepayment(Request $request)
     {
 
-        $request->validate([
+        return DB::transaction(function () use ($request) {
+            $request->validate([
 
-            'email' => 'required',
-            'amount' => 'required',
+                'email' => 'required',
+                'amount' => 'required',
+                'order_id' => 'required'
 
-        ]);
+            ]);
 
-        $email = $request->email;
-        $amount = $request->amount * 100;
-
-
-        if ($request->split_code) {
-            $split_code = $request->split_code;
-            $body = [
-                'email' => $email,
-                'amount' => $amount,
+            $email = $request->email;
+            $amount = $request->amount * 100;
+            $order_id = $request->order_id;
 
 
-            ];
-        } else {
             $body = [
                 'email' => $email,
                 'amount' => $amount,
 
             ];
-        }
 
+            $response =  Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->api_key,
+            ])->post(
+                'https://api.paystack.co/transaction/initialize',
+                $body
+            );
+            $data = $response->json()['data'];
 
-        $response =  Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->api_key,
-        ])->post(
-            'https://api.paystack.co/transaction/initialize',
-            $body
-        );
-        $data = $response->json()['data'];
+            $result =   $this->user->transactions()->create([
+                'reference' => $data['reference'],
+                'message' => 'pending',
+                'status' => 'pending',
+                'trxref' =>  $data['access_code'],
+                'redirecturl' =>  $data['authorization_url'],
+                'order_id' => $order_id,
+                'amount' => $amount,
+                'mode' => 'paysatck',
+                'type' => 'online'
 
+            ]);
 
-
-        return $data;
+            return $data;
+        });
     }
 
     public function verifytransaction($reference)
@@ -143,7 +141,7 @@ class BankDetailController extends Controller
 
             if ($response->json()['status'] && strtolower($response->json()['message']) == 'verification successful') {
 
-                $order = Order::where('reference', $reference)->first();
+                $order = Transaction::where('reference', $reference)->first();
                 if (!$order) {
                     return response()->json([
                         'status' => false,
@@ -183,10 +181,6 @@ class BankDetailController extends Controller
                 $order->save();
 
 
-                if ($order->type == 'tribe') {
-                    $tribe = Tribe::find($order->item_id);
-                    $tribe->users()->attach($order->user_id);
-                }
 
                 $result = [
                     'status' => true,
