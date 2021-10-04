@@ -13,6 +13,41 @@ class StoreSeeders extends Seeder
      */
     public function run()
     {
-        //
+        \App\Models\Store::create(
+            [
+                'name' => 'Hubmart',
+                'location' => 'lekki',
+                'image' => '/static/media/hubmart.663e09e1.png',
+                'connection' => 'api',
+                'api_endpoint' => '',
+                'db_host' => '',
+                'db_username' => '',
+                'db_password' => ''
+            ],
+        );
+        \App\Models\Store::create(
+            [
+                'name' => 'Spar',
+                'location' => 'ikoyi',
+                'image' => '/static/media/hubmart.663e09e1.png',
+                'connection' => 'api',
+                'api_endpoint' => '',
+                'db_host' => '',
+                'db_username' => '',
+                'db_password' => ''
+            ]
+        );
+        \App\Models\Store::create(
+            [
+                'name' => 'Shoprite',
+                'location' => 'ikeja',
+                'image' => '/static/media/hubmart.663e09e1.png',
+                'connection' => 'api',
+                'api_endpoint' => '',
+                'db_host' => '',
+                'db_username' => '',
+                'db_password' => ''
+            ],
+        );
     }
 }
