@@ -11,17 +11,17 @@ class ProductController extends Controller
 
     public function storeproducts(Request $request)
     {
-        return Product::where('store_id', $request->store_id)->where('category_id', $request->category_id)->get();
+        return Product::with('store')->where('store_id', $request->store_id)->where('category_id', $request->category_id)->get();
     }
 
     public function allstoreproducts(Request $request)
     {
-        return Product::where('store_id', $request->store_id)->get();
+        return Product::with('store')->where('store_id', $request->store_id)->get();
     }
 
     public function show(Product $product)
     {
-        return $product;
+        return $product->load('store', 'category');
     }
     public function store(Request $request)
     {

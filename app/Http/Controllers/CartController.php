@@ -32,6 +32,7 @@ class CartController extends Controller
     public function store(Request $request)
     {
 
+
         $store = Store::find($request->store_id);
         $product = Product::find($request->product_id);
         $quantity =  1;
@@ -44,7 +45,9 @@ class CartController extends Controller
             $product->price,
             $quantity,
             $product->product_desc,
-            $product->image
+            $product->image,
+            $store->id,
+            $product->id,
         );
     }
 

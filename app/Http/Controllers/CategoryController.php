@@ -15,7 +15,7 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
 
-        return $category->load('products');
+        return Category::with('products')->where('store_id', $category->store_id)->get();
     }
 
     public function store(Request $request)

@@ -38,7 +38,7 @@ class UserController extends Controller
 
                 'email' => 'bail|required|unique:users',
                 'password' => 'required|min:6',
-                'phoneNumber' => 'bail|required|unique:users'
+                'phoneNumber' => 'bail|required|unique:users|min:11'
             ]);
 
 

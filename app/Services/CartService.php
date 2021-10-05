@@ -7,7 +7,7 @@ use App\Models\User;
 
 class CartService
 {
-  public function createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image)
+  public function createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id)
   {
     $price = floatval($price);
     $quantity = intval($quantity);
@@ -20,33 +20,41 @@ class CartService
       'price' => $price,
       'quantity' => $quantity,
       'description' => $description,
-      'image' => $image
+      'image' => $image,
+      'store_id' => $store_id,
+      'product_id' => $product_id
     ];
   }
 
-  public function add($user, $store_name, $product_name, $brand_name, $price, $quantity, $description, $image)
+  public function add($user, $store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id)
   {
-    $cartItems = $this->createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image);
+    $cartItems = $this->createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id);
 
     $newcart = $user->cart()
       ->where([
-        'product_name' => $cartItems['product_name'],
-        'store_name' => $cartItems['store_name'],
-        'brand_name' => $cartItems['brand_name']
+        'product_id' => $cartItems['product_id'],
+        'store_id' => $cartItems['store_id'],
+
       ])
       ->first();
 
     if (is_null($newcart)) {
       $item =  $user->cart()->create($cartItems);
-      return $item;
+      return response([
+        'status' => 'success',
+        'data' => $item
+      ], 201);
     } else {
-      $newcart->store_name = $store_name;
-      $newcart->brand_name = $brand_name;
-      $newcart->price = $price;
-      $newcart->quantity =  $newcart->quantity + $quantity;
-      $newcart->save();
+      // $newcart->store_name = $store_name;
+      // $newcart->brand_name = $brand_name;
+      // $newcart->price = $price;
+      // $newcart->quantity =  $newcart->quantity + $quantity;
+      // $newcart->save();
 
-      return $newcart;
+      return response()->json([
+        'status' => 'in_cart',
+        'data' => $newcart
+      ]);
     }
   }
   public function getCart($user)
