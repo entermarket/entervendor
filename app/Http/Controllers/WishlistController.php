@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Wishlist;
+use App\Models\WishlistItem;
 use App\Services\WishlistService;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,12 @@ class WishlistController extends Controller
 
     public function store(Request $request)
     {
+
         return  $this->wishlistservice->createwishlist($request, $this->user);
+    }
+    public function storeitem(Request $request)
+    {
+        return  $this->wishlistservice->createwishlistitem($request, $this->user);
     }
     public function index()
     {
@@ -28,6 +34,11 @@ class WishlistController extends Controller
     public function destroy(Wishlist $wishlist)
     {
         $wishlist->delete();
+        return $this->response_success('removed');
+    }
+    public function destroyitem(WishlistItem $wishlistItem)
+    {
+        $wishlistItem->delete();
         return $this->response_success('removed');
     }
 

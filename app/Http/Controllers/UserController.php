@@ -13,6 +13,7 @@ use App\Mail\OtpReset;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\PasswordResetMail;
+use App\Notifications\NewUser;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -50,7 +51,7 @@ class UserController extends Controller
                 ], 422);
             }
 
-            User::create([
+            $user = User::create([
                 'firstName' => $request->firstName,
                 'lastName' => $request->lastName,
                 'email' => $request->email,
@@ -66,6 +67,12 @@ class UserController extends Controller
 
             ]);
 
+
+            $detail = [
+                'message' => 'Welcome to my hood',
+                'url' => 'http://entermarket.com'
+            ];
+            $user->notify(new NewUser($detail));
 
             $responseMessage = "registration successful";
 
@@ -287,6 +294,29 @@ class UserController extends Controller
         Otp::where('code', $request->code)->first()->delete();
 
         return response()->json('Password changed');
+    }
+
+    public function update(User $user, Request $request)
+    {
+        $user = auth('api')->user();
+        $year = $request->year;
+        $month = $request->month;
+        $day = $request->date;
+        $dob = Carbon::createFromDate($request->year, $request->month, $request->date, 'Africa/Lagos')->format('d/m/Y');
+
+        $user->firstName = $request->firstName;
+        $user->lastName = $request->surname;
+        $user->email = $request->email;
+        $user->address  = $request->address;
+        $user->dob = $dob;
+        $user->gender = $request->gender;
+        $user->city = $request->city;
+        $user->state = $request->state;
+        $user->country  = $request->country;
+        $user->phoneNumber = $request->phone;
+        $user->profileImage = $request->profileImage;
+        $user->save();
+        return $user;
     }
     public function logout()
     {

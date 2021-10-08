@@ -21,8 +21,14 @@ class Order extends Model
         'discount',
         'grand_total',
         'user_id',
+        'items',
         'title', 'isScheduled', 'schedule_time'
     ];
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -37,6 +43,6 @@ class Order extends Model
     }
     public function orderinfo()
     {
-        return $this->hasMany(OrderInformation::class);
+        return $this->hasOne(OrderInformation::class);
     }
 }

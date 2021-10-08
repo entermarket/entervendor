@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Notifications\OrderCreated;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -22,10 +23,10 @@ class OrderService
 
   public function create(
     $user,
-    int $shipping_charges,
-    string $promo,
+    $shipping_charges,
+    $promo,
     $commission,
-    int $discount,
+    $discount,
     $shipping_method,
     $shipping_address,
     $city,
@@ -66,6 +67,12 @@ class OrderService
 
       $grand_total = (intval($total) + intval($shipping_charges) + intval($commission)) - $discount;
 
+      $items = $usercart->map(function ($a) {
+        return $a['quantity'];
+      })->reduce(function ($a, $b) {
+        return $a + $b;
+      });
+
 
       //create order
       $order =  $user->orders()->create([
@@ -81,7 +88,9 @@ class OrderService
         'grand_total' => $grand_total,
         'title' => $title,
         'isScheduled' => $isScheduled,
-        'schedule_time' => $schedule_time
+        'schedule_time' => $schedule_time,
+        'items' => $items,
+
       ]);
 
       $order->orderhistories()->createMany($usercart->toArray());
@@ -110,6 +119,13 @@ class OrderService
       $user->save();
 
       $cartservice->clearcart($user);
+
+      $detail = [
+        'message' => 'Order created',
+        'url' => 'http://entermarket.com'
+      ];
+      $user->notify(new OrderCreated($detail));
+
 
       return response()->json(
         [

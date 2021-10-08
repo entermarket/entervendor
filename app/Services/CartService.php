@@ -98,8 +98,10 @@ class CartService
           $cart->delete();
         }
       }
-
-      return $cart;
+      if ($cart) {
+        return $cart;
+      }
+      return [];
     } catch (\Throwable $th) {
       return response()->json(
         [

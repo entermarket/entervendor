@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
@@ -48,6 +49,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('user/clear/cart', [CartController::class, 'destroyall']);
     Route::apiResource('user/transactions', TransactionController::class);
     Route::get('user/profile', [UserController::class, 'viewProfile'])->name('profile.user');
+    Route::post('user/profile/update', [UserController::class, 'update']);
 
 
     Route::get('user/notifications', [NotificationController::class, 'getnotifications']);
@@ -55,6 +57,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('user/notifications/mark', [NotificationController::class, 'markreadnotifications']);
     Route::get('user/notifications/{id}/mark', [NotificationController::class, 'marksinglenotification']);
     Route::delete('user/notifications/delete', [NotificationController::class, 'destroy']);
+
+
+    Route::apiResource('reports', ReportController::class);
 });
 
 
@@ -69,10 +74,13 @@ Route::apiResource('categories', CategoryController::class);
 
 Route::post('store/products', [ProductController::class, 'storeproducts']);
 Route::post('store/products/all', [ProductController::class, 'allstoreproducts']);
+Route::get('similar/products/{id}', [ProductController::class, 'getsimilarproducts']);
 Route::apiResource('products', ProductController::class);
 
 //Wishlist routes
 Route::post('clear/wishlists', [WishlistController::class, 'destroyall']);
+Route::post('wishlist/item', [WishlistController::class, 'storeitem']);
+Route::delete('wishlist/item/{wishlistitem}', [WishlistController::class, 'destroyitem']);
 Route::apiResource('wishlists', WishlistController::class);
 
 //Story routes
