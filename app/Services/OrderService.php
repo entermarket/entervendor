@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
+use App\Http\Controllers\BankDetailController;
 use App\Models\Order;
 use App\Notifications\OrderCreated;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Http\Request;
 
 class OrderService
 {
@@ -23,6 +24,7 @@ class OrderService
 
   public function create(
     $user,
+    $name,
     $shipping_charges,
     $promo,
     $commission,
@@ -44,6 +46,7 @@ class OrderService
     // try {
     return  DB::transaction(function () use (
       $user,
+      $name,
       $shipping_charges,
       $promo,
       $discount,
@@ -62,6 +65,17 @@ class OrderService
     ) {
       $cartservice = new CartService;
       $usercart =  $cartservice->getCart($user)['cart'];
+
+      if (!count($usercart)) {
+        return response()->json(
+          [
+            'status' => false,
+            'message' => 'Empty cart',
+
+          ],
+          401
+        );
+      }
       $total = $cartservice->total($user)['total'];
       $order_no = $this->generateUniqueCode();
 
@@ -77,6 +91,7 @@ class OrderService
       //create order
       $order =  $user->orders()->create([
         'order_no' => $order_no,
+        'name' => $name,
         'status' => 'pending',
         'sub_total' => $total,
         'total_amount' => $total,
@@ -118,7 +133,7 @@ class OrderService
       $user->phoneNumber =  $phoneNumber;
       $user->save();
 
-      $cartservice->clearcart($user);
+
 
       $detail = [
         'message' => 'Order created',
@@ -126,11 +141,23 @@ class OrderService
       ];
       $user->notify(new OrderCreated($detail));
 
+      $myrequest = new Request();
+      $myrequest->setMethod('POST');
+      $myrequest->request->add([
+        'amount' => $grand_total,
+        'email' => $user->email,
+        'order_id' => $order->id
+      ]);
 
+
+      $payment  = new BankDetailController();
+      return  $payment_data = $payment->makepayment($myrequest);
+      // $cartservice->clearcart($user);
       return response()->json(
         [
           'status' => true,
-          'message' => 'order created'
+          'message' => 'order created',
+          'data' => $payment_data
         ],
         201
       );

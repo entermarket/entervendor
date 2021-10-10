@@ -84,18 +84,13 @@ class BankDetailController extends Controller
     public function makepayment(Request $request)
     {
 
+
         return DB::transaction(function () use ($request) {
-            $request->validate([
 
-                'email' => 'required',
-                'amount' => 'required',
-                'order_id' => 'required'
 
-            ]);
-
-            $email = $request->email;
-            $amount = $request->amount * 100;
-            $order_id = $request->order_id;
+            $email = $this->user->email;
+            $amount = $request['amount'] * 100;
+            $order_id = $request['order_id'];
 
 
             $body = [
@@ -110,14 +105,14 @@ class BankDetailController extends Controller
                 'https://api.paystack.co/transaction/initialize',
                 $body
             );
-            $data = $response->json()['data'];
+            $responsedata = $response->json()['data'];
 
             $result =   $this->user->transactions()->create([
-                'reference' => $data['reference'],
+                'reference' => $responsedata['reference'],
                 'message' => 'pending',
                 'status' => 'pending',
-                'trxref' =>  $data['access_code'],
-                'redirecturl' =>  $data['authorization_url'],
+                'trxref' =>  $responsedata['access_code'],
+                'redirecturl' =>  $responsedata['authorization_url'],
                 'order_id' => $order_id,
                 'amount' => $amount,
                 'mode' => 'paysatck',
@@ -125,7 +120,7 @@ class BankDetailController extends Controller
 
             ]);
 
-            return $data;
+            return $responsedata;
         });
     }
 
@@ -141,25 +136,41 @@ class BankDetailController extends Controller
 
             if ($response->json()['status'] && strtolower($response->json()['message']) == 'verification successful') {
 
-                $order = Transaction::where('reference', $reference)->first();
-                if (!$order) {
+                $transaction = Transaction::where('reference', $reference)->first();
+                if (!$transaction) {
                     return response()->json([
                         'status' => false,
                         'message' => 'Invalid reference'
                     ]);
                 }
-                $order->message = $response->json()['message'];
-                $order->status = $response->json()['status'];
-                $order->save();
+                $transaction->message = $response->json()['message'];
+                $transaction->status = $response->json()['status'];
+                $transaction->save();
+
+                if ($response->json()['status'] == 'success') {
+                    $order = Order::find($transaction->order_id);
+                    $order->payment_status = 'paid';
+                    $order->save();
+                } else {
+                    $order = Order::find($transaction->order_id);
+                    $order->payment_status = 'failed';
+                    $order->save();
+                }
+
 
 
 
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Verification successful'
+                    'message' => 'Verification successful',
+                    'data' => $transaction->load('order')
                 ]);
             }
+            $result = [
+                'status' => false,
+                'message' => 'Transaction failed'
+            ];
         });
     }
 
@@ -169,22 +180,33 @@ class BankDetailController extends Controller
 
             if ($request->event == 'charge.success') {
 
-                $order = Order::where('reference', $request->reference)->first();
-                if (!$order) {
+                $transaction = Transaction::where('reference', $request->reference)->first();
+                if (!$transaction) {
                     return response()->json([
                         'status' => false,
                         'message' => 'Invalid reference'
                     ]);
                 }
-                $order->message = $request->gateway_response;
-                $order->status = $request->status;
-                $order->save();
+                $transaction->message = $request->gateway_response;
+                $transaction->status = $request->status;
+                $transaction->save();
+
+                if ($request->status == 'success') {
+                    $order = Order::find($transaction->order_id);
+                    $order->payment_status = 'paid';
+                    $order->save();
+                } else {
+                    $order = Order::find($transaction->order_id);
+                    $order->payment_status = 'failed';
+                    $order->save();
+                }
 
 
 
                 $result = [
                     'status' => true,
-                    'message' => 'Transaction successful'
+                    'message' => 'Transaction successful',
+
                 ];
                 broadcast(new TransactionSuccessful($result));
                 return $result;

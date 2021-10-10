@@ -19,16 +19,16 @@ class OrderController extends Controller
 
     public function index()
     {
-        return $this->user->orders()->with('orderhistories', 'orderinfo')->get();
+        return $this->user->orders()->with('orderhistories', 'orderinfo')->latest()->get();
     }
 
 
     public function store(Request $request)
     {
 
-
         return $this->orderService->create(
             $this->user,
+            $request->name,
             $request->shipping ? $request->shipping : 0,
             $request->coupon,
             $request->commission,
