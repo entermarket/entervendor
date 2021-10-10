@@ -151,8 +151,8 @@ class OrderService
 
 
       $payment  = new BankDetailController();
-      return  $payment_data = $payment->makepayment($myrequest);
-      // $cartservice->clearcart($user);
+      $payment_data = $payment->makepayment($myrequest);
+      $cartservice->clearcart($user);
       return response()->json(
         [
           'status' => true,
