@@ -60,6 +60,10 @@ Route::middleware(['auth:api'])->group(function () {
 
 
     Route::apiResource('reports', ReportController::class);
+
+    Route::post('change/pin', [UserController::class, 'changepin']);
+    Route::post('create/pin', [UserController::class, 'createpin']);
+    Route::post('change/password', [UserController::class, 'changepassword']);
 });
 
 

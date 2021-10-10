@@ -331,4 +331,77 @@ class UserController extends Controller
             'message' => $responseMessage
         ], 200);
     }
+
+    public function changepassword(Request $request)
+    {
+        $request->validate([
+            'oldpassword' => 'required',
+            'newpassword' => 'required',
+        ]);
+
+        $user = auth('api')->user();
+        $oldpassword = $user->password;
+        $checkpassword = Hash::check($request->oldpassword, $oldpassword);
+        if (!$checkpassword) {
+            return response()->json([
+                "success" => false,
+                "message" => 'incorrect old password'
+
+            ], 401);
+        }
+
+        $user->password = Hash::make($request->newpassword);
+        $user->save();
+        return response()->json([
+            "success" => true,
+            "message" => 'password changed'
+
+        ], 200);
+    }
+
+    public function changepin(Request $request)
+    {
+        $request->validate([
+            'oldpin' => 'required|max:4|min:4',
+            'newpin' => 'required|max:4|min:4',
+        ]);
+
+        $user = auth('api')->user();
+        $oldpin = $user->pin;
+        $checkpin = Hash::check($request->oldpin, $oldpin);
+        if (!$checkpin) {
+            return response()->json([
+                "success" => false,
+                "message" => 'incorrect old pin'
+
+            ], 401);
+        }
+
+        $user->pin = Hash::make($request->newpin);
+        $user->save();
+        return response()->json([
+            "success" => true,
+            "message" => 'pin changed'
+
+        ], 200);
+    }
+
+    public function createpin(Request $request)
+    {
+        $request->validate([
+            'newpin' => 'required|max:4|min:4',
+
+        ]);
+        $user = auth('api')->user();
+
+
+
+        $user->pin = Hash::make($request->newpin);
+        $user->save();
+        return response()->json([
+            "success" => true,
+            "message" => 'pin created'
+
+        ], 200);
+    }
 }
