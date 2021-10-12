@@ -10,6 +10,11 @@ class ProductController extends Controller
 {
 
 
+    public function inded()
+    {
+        return Product::with('store', 'category')->get();
+    }
+
     public function storeproducts(Request $request)
     {
         return Product::with('store')->where('store_id', $request->store_id)->where('category_id', $request->category_id)->get();
