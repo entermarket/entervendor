@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
 
 
-    public function inded()
+    public function index()
     {
         return Product::with('store', 'category')->get();
     }
