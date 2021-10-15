@@ -405,6 +405,17 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function storeUploads(Request $request)
+    {
+
+        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+        $user = auth('api')->user();
+        $user->profileImage = $response;
+        $user->save();
+
+        dd($response);
+    }
+
     public function destroy(User $user)
     {
 

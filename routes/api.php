@@ -99,6 +99,7 @@ Route::post('users/login', [UserController::class, 'login']);
 Route::get('users/logout', [UserController::class, 'logout'])->name('logout.user');
 Route::post('users/forgot-password', [UserController::class, 'postEmail']);
 Route::post('users/update-password', [UserController::class, 'updatePassword']);
+Route::post('user/image', [UserController::class, 'storeUploads']);
 Route::delete('user/delete/{user}', [UserController::class, 'destroy']);
 Route::apiResource('otp', OtpController::class);
 
