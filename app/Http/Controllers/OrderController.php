@@ -26,6 +26,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
+
         return $this->orderService->create(
             $this->user,
             $request->name,
@@ -33,7 +34,7 @@ class OrderController extends Controller
             $request->coupon,
             $request->commission,
             $request->discount ? $request->discount : 0,
-            $request->shipping_method,
+            $request->shippingtype,
             $request->address,
             $request->city,
             $request->state,
@@ -43,7 +44,8 @@ class OrderController extends Controller
             $request->paymentMethod,
             $request->title,
             $request->isScheduled,
-            $request->schedule_time
+            $request->schedule_time,
+            $request->deliverymethod,
         );
     }
 

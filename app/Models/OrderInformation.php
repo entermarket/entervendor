@@ -22,7 +22,8 @@ class OrderInformation extends Model
         'extra_instruction',
         'payment_method',
         'user_id',
-        'order_id'
+        'order_id',
+        'delivery_method'
     ];
     public function user()
     {

@@ -39,7 +39,8 @@ class OrderService
     $payment_method,
     $title,
     $isScheduled,
-    $schedule_time
+    $schedule_time,
+    $delivery_method
 
   ) {
 
@@ -61,7 +62,8 @@ class OrderService
       $commission,
       $title,
       $isScheduled,
-      $schedule_time
+      $schedule_time,
+      $delivery_method
     ) {
       $cartservice = new CartService;
       $usercart =  $cartservice->getCart($user)['cart'];
@@ -115,6 +117,7 @@ class OrderService
         'user_id' => $user->id,
         'firstName' => $user->firstName,
         'lastName' => $user->lastName,
+        'delivery_method' => $delivery_method,
         'shipping_method' => $shipping_method,
         'shipping_address' => $shipping_address,
         '$pickup_location' => $pickup_location,

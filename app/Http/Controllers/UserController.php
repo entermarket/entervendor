@@ -404,4 +404,11 @@ class UserController extends Controller
 
         ], 200);
     }
+
+    public function destroy(User $user)
+    {
+
+        $user->delete();
+        return response('user deleted');
+    }
 }
