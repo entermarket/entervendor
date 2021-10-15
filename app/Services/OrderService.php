@@ -160,7 +160,8 @@ class OrderService
         [
           'status' => true,
           'message' => 'order created',
-          'data' => $payment_data
+          'data' => $payment_data,
+          'order' => $order
         ],
         201
       );
