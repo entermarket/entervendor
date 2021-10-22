@@ -143,7 +143,6 @@ class OrderService
         'url' => 'http://entermarket.com'
       ];
       $user->notify(new OrderCreated($detail));
-
       $myrequest = new Request();
       $myrequest->setMethod('POST');
       $myrequest->request->add([

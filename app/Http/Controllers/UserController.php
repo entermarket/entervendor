@@ -62,7 +62,7 @@ class UserController extends Controller
                 'state' => $request->state,
                 'country' => $request->country,
                 'phoneNumber' => $request->phoneNumber,
-                'profileImage' => $request->profileImage,
+                'profileImage' => $request->root() . '/img/profile.jpeg',
                 'password' => Hash::make($request->password)
 
             ]);
@@ -75,6 +75,10 @@ class UserController extends Controller
             $user->notify(new NewUser($detail));
 
             $responseMessage = "registration successful";
+
+            if ($user) {
+                return $this->login($request);
+            }
 
             return response()->json([
                 'success' => true,
