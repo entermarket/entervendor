@@ -220,4 +220,11 @@ class BankDetailController extends Controller
             return $result;
         });
     }
+
+    public function paybypayviame(Request $request)
+    {
+        return $request->all();
+        DB::transaction(function () use ($request) {
+        });
+    }
 }

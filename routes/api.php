@@ -39,19 +39,26 @@ use App\Http\Controllers\OrderHistoryController;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('user/payviame/token', [UserController::class, 'getpayviametoken']);
 
 Route::middleware(['auth:api'])->group(function () {
 
+
+    // Orders
     Route::apiResource('user/order/histories', OrderHistoryController::class);
     Route::apiResource('user/orders', OrderController::class);
+
+    // Cart
     Route::apiResource('user/cart', CartController::class);
     Route::get('get/total', [CartController::class, 'gettotal']);
     Route::get('user/clear/cart', [CartController::class, 'destroyall']);
-    Route::apiResource('user/transactions', TransactionController::class);
+
+    // Profile
     Route::get('user/profile', [UserController::class, 'viewProfile'])->name('profile.user');
     Route::post('user/profile/update', [UserController::class, 'update']);
 
 
+    // Notifications
     Route::get('user/notifications', [NotificationController::class, 'getnotifications']);
     Route::get('user/notifications/unread', [NotificationController::class, 'unreadnotifications']);
     Route::get('user/notifications/mark', [NotificationController::class, 'markreadnotifications']);
@@ -59,11 +66,21 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('user/notifications/delete', [NotificationController::class, 'destroy']);
 
 
-    Route::apiResource('reports', ReportController::class);
 
+    // Pin and password
     Route::post('change/pin', [UserController::class, 'changepin']);
     Route::post('create/pin', [UserController::class, 'createpin']);
     Route::post('change/password', [UserController::class, 'changepassword']);
+
+    // Reports
+    Route::apiResource('reports', ReportController::class);
+
+    // Transactions
+    Route::apiResource('user/transactions', TransactionController::class);
+    Route::post('transaction/initiate', [BankDetailController::class, 'makepayment']);
+    Route::get('transaction/verify/{reference}', [BankDetailController::class, 'verifytransaction']);
+    Route::post('transaction/verify', [BankDetailController::class, 'transactionevent']);
+    Route::post('payviame/payment', [BankDetailController::class, 'paybypayviame']);
 });
 
 
@@ -142,7 +159,3 @@ Route::post('password/reset', [UserController::class, 'changePasswordByOtp']);
 Route::get('get/banks', [BankDetailController::class, 'getbanks']);
 Route::get('get/bank/detail', [BankDetailController::class, 'getbankdetail']);
 Route::apiResource('bank/details', BankDetailController::class);
-Route::post('transaction/initiate', [BankDetailController::class, 'makepayment']);
-
-Route::get('transaction/verify/{reference}', [BankDetailController::class, 'verifytransaction']);
-Route::post('transaction/verify', [BankDetailController::class, 'transactionevent']);

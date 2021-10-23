@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use App\Mail\PasswordResetMail;
 use App\Notifications\NewUser;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Http;
 
 class UserController extends Controller
 {
@@ -122,8 +122,16 @@ class UserController extends Controller
 
             $accessToken = auth()->user()->createToken('authToken')->accessToken;
             $responseMessage = "login successful";
+            $data = [
+                'email' => 'entermarket@payviame.com',
+                'password' => 'almond.2',
+            ];
 
-            return $this->respondWithToken($accessToken, $responseMessage, auth()->user());
+            $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
+            $payviame_token = $response->json()['access_token'];
+
+
+            return $this->respondWithToken($accessToken, $payviame_token, $responseMessage, auth()->user());
         } else {
             $responseMessage = "invalid credentials";
             return response()->json([
@@ -132,6 +140,17 @@ class UserController extends Controller
                 "error" => $responseMessage
             ], 422);
         }
+    }
+    public function getpayviametoken()
+    {
+        $data = [
+            'email' => 'entermarket@payviame.com',
+            'password' => 'almond.2',
+        ];
+
+        $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
+        $payviame_token = $response->json()['access_token'];
+        return $payviame_token;
     }
 
     public function show(User $user)

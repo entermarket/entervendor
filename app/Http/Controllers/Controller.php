@@ -16,13 +16,14 @@ class Controller extends BaseController
 
 
 
-    public function respondWithToken($token, $responseMessage, $data)
+    public function respondWithToken($token, $payviame_token, $responseMessage, $data)
     {
         return \response()->json([
             "success" => true,
             "message" => $responseMessage,
             "data" => $data,
             "token" => $token,
+            'payviame_token' => $payviame_token,
             "token_type" => "bearer",
         ], 200);
     }
