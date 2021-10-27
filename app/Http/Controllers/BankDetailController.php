@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\TransactionSuccessful;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Events\TransactionSuccessful;
 
 class BankDetailController extends Controller
 {
@@ -115,7 +116,7 @@ class BankDetailController extends Controller
                 'redirecturl' =>  $responsedata['authorization_url'],
                 'order_id' => $order_id,
                 'amount' => $amount,
-                'mode' => 'paysatck',
+                'mode' => 'paystack',
                 'type' => 'online'
 
             ]);
@@ -137,35 +138,75 @@ class BankDetailController extends Controller
             if ($response->json()['status'] && strtolower($response->json()['message']) == 'verification successful') {
 
                 $transaction = Transaction::where('reference', $reference)->first();
-                if (!$transaction) {
+                $payment = Payment::where('reference', $reference)->where('status', 'pending')->first();
+                if ($transaction) {
+                    $transaction->message = $response->json()['message'];
+                    $transaction->status = $response->json()['status'];
+                    $transaction->save();
+
+                    if ($response->json()['status'] == 'success') {
+                        $order = Order::find($transaction->order_id);
+                        $order->payment_status = 'paid';
+                        $order->save();
+                    } else {
+                        $order = Order::find($transaction->order_id);
+                        $order->payment_status = 'failed';
+                        $order->save();
+                    }
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Verification successful',
+                        'data' => $transaction->load('order'),
+                        'type' => 'order'
+                    ]);
+                } else if ($payment) {
+
+
+                    if ($payment->status === 'pending') {
+
+                        if ($payment->type === 'airtime') {
+                            $body = [
+                                'network' => strtoupper($payment->network),
+                                'amount' => $payment->amount * 100,
+                                'mobile_number' => $payment->number
+                            ];
+
+                            $response =  Http::withHeaders([
+                                'Authorization' => 'Bearer ' . $payment->token,
+                            ])->post(
+                                'https://api.payviame.com/api/buy-airtime',
+                                $body
+                            );
+                            $responsedata = $response->json();
+                            if ($responsedata['status'] === 'success') {
+                                $payment->status = $response->json()['status'];
+                                $payment->message = $response->json()['message'];
+                                $payment->transactionRef = $responsedata['transactionRef'];
+                                $payment->save();
+                            } else {
+                                $payment->status = $response->json()['status'];
+                                $payment->message = $response->json()['message'];
+                                $payment->transactionRef = $responsedata['transactionRef'];
+                                $payment->save();
+                            }
+                        }
+                    } else {
+                    }
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Verification successful',
+                        'data' => $payment,
+                        'type' => 'payment',
+                        'response' => $responsedata
+                    ]);
+                } else {
                     return response()->json([
                         'status' => false,
                         'message' => 'Invalid reference'
                     ]);
                 }
-                $transaction->message = $response->json()['message'];
-                $transaction->status = $response->json()['status'];
-                $transaction->save();
-
-                if ($response->json()['status'] == 'success') {
-                    $order = Order::find($transaction->order_id);
-                    $order->payment_status = 'paid';
-                    $order->save();
-                } else {
-                    $order = Order::find($transaction->order_id);
-                    $order->payment_status = 'failed';
-                    $order->save();
-                }
-
-
-
-
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Verification successful',
-                    'data' => $transaction->load('order')
-                ]);
             }
             $result = [
                 'status' => false,
@@ -223,8 +264,40 @@ class BankDetailController extends Controller
 
     public function paybypayviame(Request $request)
     {
-        return $request->all();
-        DB::transaction(function () use ($request) {
+
+
+        return DB::transaction(function () use ($request) {
+            $payment = $this->user->payments()->create([
+                'type' => $request->type,
+                'amount' => $request->amount,
+                'service' => $request->service,
+                'network' => $request->network,
+                'number' => $request->number,
+                'service_id' => $request->service_id,
+                'status' => 'pending',
+                'token' => $request->token
+
+            ]);
+
+            $email = $this->user->email;
+            $amount = $request['amount'] * 100;
+
+            $body = [
+                'email' => $email,
+                'amount' => $amount,
+
+            ];
+            $response =  Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->api_key,
+            ])->post(
+                'https://api.paystack.co/transaction/initialize',
+                $body
+            );
+            $responsedata = $response->json()['data'];
+            $payment->reference =  $responsedata['reference'];
+            $payment->save();
+
+            return $responsedata;
         });
     }
 }
