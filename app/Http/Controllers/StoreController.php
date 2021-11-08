@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
+use Mail;
+use Validator;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use App\Services\StoreService;
+use Illuminate\Support\Facades\Http;
 
 class StoreController extends Controller
 {
@@ -23,6 +27,13 @@ class StoreController extends Controller
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+
+            'email' => 'bail|required|unique:stores',
+            'password' => 'required|min:6',
+            'images'=> 'required'
+           
+        ]);
         return $this->storeservice->createstore($request);
     }
 
@@ -40,4 +51,110 @@ class StoreController extends Controller
         $store->delete();
         return $this->response_success('store removed');
     }
+
+    public function login(Request $request)
+    {
+       
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string',
+            'password' => 'required|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->messages()->toArray()
+            ], 500);
+        }
+
+        $credentials = $request->only(["email", "password"]);
+        $store = Store::where('email', $credentials['email'])->first();
+        if ($store) {
+            if (!Auth::guard('store')->attempt($credentials)) {
+                $responseMessage = "invalid credentials";
+
+                return response()->json([
+                    "success" => false,
+                    "message" => $responseMessage,
+                    "error" => $responseMessage
+                ], 422);
+            }
+
+        $user =  Auth::guard('store')->user();
+            $accessToken =$user->createToken('authToken')->accessToken;
+            $responseMessage = "login successful";
+            $data = [
+                'email' => 'entermarket@payviame.com',
+                'password' => 'almond.2',
+            ];
+
+            // $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
+            // $payviame_token = $response->json()['access_token'];
+
+
+            return $this->respondWithToken($accessToken,'', $responseMessage, $user);
+        } else {
+            $responseMessage = "invalid credentials";
+            return response()->json([
+                "success" => false,
+                "message" => $responseMessage,
+                "error" => $responseMessage
+            ], 422);
+        }
+    }
+    public function getpayviametoken()
+    {
+        $data = [
+            'email' => 'entermarket@payviame.com',
+            'password' => 'almond.2',
+        ];
+
+        $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
+        $payviame_token = $response->json()['access_token'];
+        return $payviame_token;
+    }
+
+   
+    public function logout()
+    {
+
+        //auth()->user()->logout();
+
+        $user = Auth::guard("store_api")->user()->token();
+        $user->revoke();
+        $responseMessage = "successfully logged out";
+        return response()->json([
+            'success' => true,
+            'message' => $responseMessage
+        ], 200);
+    }
+
+    public function changepassword(Request $request)
+    {
+        $request->validate([
+            'oldpassword' => 'required',
+            'newpassword' => 'required',
+        ]);
+
+        $user = auth('store_api')->user();
+        $oldpassword = $user->password;
+        $checkpassword = Hash::check($request->oldpassword, $oldpassword);
+        if (!$checkpassword) {
+            return response()->json([
+                "success" => false,
+                "message" => 'incorrect old password'
+
+            ], 401);
+        }
+
+        $user->password = Hash::make($request->newpassword);
+        $user->save();
+        return response()->json([
+            "success" => true,
+            "message" => 'password changed'
+
+        ], 200);
+    }
+
+  
 }

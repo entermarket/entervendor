@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Passport\HasApiTokens;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
 
     protected $fillable = [
         'product_name',
@@ -19,7 +20,8 @@ class Product extends Model
         'batch_no',
         'in_stock',
         'category_id',
-        'store_id'
+        'store_id',
+        'image'
     ];
 
     public function store()
@@ -30,5 +32,9 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
     }
 }

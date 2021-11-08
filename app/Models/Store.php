@@ -4,12 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Store extends Model
+class Store extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
     protected $fillable = [
         'name',
+        'email',
+        'password',
         'location',
         'image',
         'connection',
@@ -27,4 +32,20 @@ class Store extends Model
     {
         return $this->hasMany(Category::class);
     }
+    public function brands()
+    {
+        return $this->hasMany(Brand::class);
+    }
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        "connection",
+        "api_endpoint",
+        "db_host",
+        "db_username",
+        "db_password",
+     
+        'password'
+    ];
 }

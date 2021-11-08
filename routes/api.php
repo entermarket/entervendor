@@ -86,6 +86,7 @@ Route::middleware(['auth:api'])->group(function () {
 
 //Store routes
 Route::get('store/categories/{store}', [StoreController::class, 'getstorecategories']);
+Route::post('store/login', [StoreController::class, 'login']);
 Route::apiResource('stores', StoreController::class);
 
 // categories
@@ -96,6 +97,7 @@ Route::apiResource('categories', CategoryController::class);
 Route::post('store/products', [ProductController::class, 'storeproducts']);
 Route::post('store/products/all', [ProductController::class, 'allstoreproducts']);
 Route::get('similar/products/{id}', [ProductController::class, 'getsimilarproducts']);
+Route::middleware('auth:store_api')->post('product/add', [ProductController::class, 'store']);
 Route::apiResource('products', ProductController::class);
 
 //Wishlist routes
