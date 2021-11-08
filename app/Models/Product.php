@@ -19,7 +19,9 @@ class Product extends Model
         'batch_no',
         'in_stock',
         'category_id',
-        'store_id'
+        'store_id',
+        'sales_price',
+        'active'
     ];
 
     public function store()

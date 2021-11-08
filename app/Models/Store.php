@@ -16,7 +16,9 @@ class Store extends Model
         'api_endpoint',
         'db_host',
         'db_username',
-        'db_password'
+        'db_password',
+        'email',
+        'password'
     ];
 
     public function products()
