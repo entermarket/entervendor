@@ -21,7 +21,9 @@ class Product extends Model
         'in_stock',
         'category_id',
         'store_id',
-        'image'
+        'image',
+        'sales_price',
+        'active'
     ];
 
     public function store()

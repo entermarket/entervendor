@@ -46,7 +46,36 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        return   $product->update($request->all());
+
+        if ($request->filled('active')  && $request->has('active')) {
+
+            $product->active = $request->active;
+        }
+        if (!empty($request->input('product_name')) && $request->filled('product_name')  && $request->has('product_name')) {
+            $product->product_name = $request->product_name;
+        }
+        if (!empty($request->input('product_desc')) && $request->filled('product_desc')  && $request->has('product_desc')) {
+            $product->product_desc = $request->product_desc;
+        }
+        if (!empty($request->input('in_stock')) && $request->filled('in_stock')  && $request->has('in_stock')) {
+            $product->in_stock = $request->in_stock;
+        }
+        if (!empty($request->input('price')) && $request->filled('price')  && $request->has('price')) {
+            $product->price = $request->price;
+        }
+        if (!empty($request->input('sales_price')) && $request->filled('sales_price')  && $request->has('sales_price')) {
+            $product->sales_price = $request->sales_price;
+        }
+        if (!empty($request->input('image')) && $request->filled('image')  && $request->has('image')) {
+            $product->image = $request->image;
+        }
+        if (!empty($request->input('product_no')) && $request->filled('product_no')  && $request->has('product_no')) {
+            $product->product_no = $request->product_no;
+        }
+
+
+        $product->save();
+        return $product;
     }
 
     public function getsimilarproducts($id)
