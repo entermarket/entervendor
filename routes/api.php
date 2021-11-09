@@ -15,6 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\BankDetailController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\NotificationController;
@@ -99,6 +100,9 @@ Route::apiResource('stores', StoreController::class);
 
 // categories
 Route::apiResource('categories', CategoryController::class);
+
+// brands
+Route::apiResource('brands', BrandController::class);
 
 // Products
 

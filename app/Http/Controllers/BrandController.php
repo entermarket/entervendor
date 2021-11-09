@@ -12,10 +12,9 @@ class BrandController extends Controller
     {
         return Brand::all();
     }
-    public function show(Brand $brand)
+    public function show( $brandId)
     {
-
-        return Brand::where('store_id', $brand->store_id)->get();
+        return Brand::where('store_id', $brandId)->get();
     }
     public function store(Request $request)
     {
