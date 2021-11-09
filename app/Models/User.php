@@ -54,6 +54,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function storeorder()
+    {
+        return $this->hasMany(StoreOrder::class);
+    }
     public function reports()
     {
         return $this->hasMany(Report::class);

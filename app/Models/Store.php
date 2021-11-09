@@ -39,6 +39,10 @@ class Store extends Authenticatable
         return $this->hasMany(Brand::class);
     }
 
+    public function storeorders(){
+        return $this->hasMany(StoreOrder::class);
+    }
+
     protected $hidden = [
         'created_at',
         'updated_at',

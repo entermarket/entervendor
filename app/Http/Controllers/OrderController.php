@@ -21,6 +21,11 @@ class OrderController extends Controller
     {
         return $this->user->orders()->with('orderhistories', 'orderinfo')->latest()->get();
     }
+    
+    public function storeorders()
+    {
+        return auth('store_api')->user()->orders()->with('orderhistories', 'orderinfo')->latest()->get();
+    }
 
 
     public function store(Request $request)

@@ -75,7 +75,7 @@ class ProductController extends Controller
 
 
         $product->save();
-        return $product;
+        return $product->load('category');
     }
 
     public function getsimilarproducts($id)

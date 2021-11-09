@@ -111,6 +111,7 @@ class OrderService
       ]);
 
       $order->orderhistories()->createMany($usercart->toArray());
+      $user->storeorder()->createMany($usercart->toArray());
 
       //update order information
       $order->orderinfo()->create([
@@ -154,7 +155,13 @@ class OrderService
 
       $payment  = new BankDetailController();
       $payment_data = $payment->makepayment($myrequest);
+
+
+
+      // clear cart 
       $cartservice->clearcart($user);
+
+
       return response()->json(
         [
           'status' => true,

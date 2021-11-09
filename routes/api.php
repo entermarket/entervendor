@@ -19,6 +19,7 @@ use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderHistoryController;
+use App\Http\Controllers\StoreOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,13 @@ Route::middleware(['auth:api'])->group(function () {
     // Orders
     Route::apiResource('user/order/histories', OrderHistoryController::class);
     Route::apiResource('user/orders', OrderController::class);
+
+
+    Route::middleware('auth:store_api')->get('store/report',[ StoreOrderController::class, 'gettotals']);
+    Route::middleware('auth:store_api')->get('store/earnings', [StoreOrderController::class, 'getearnings']);
+    Route::middleware('auth:store_api')->get('top/earnings', [StoreOrderController::class, 'gettopearner']);
+    Route::middleware('auth:store_api')->apiResource('storeorders', StoreOrderController::class);
+
 
     // Cart
     Route::apiResource('user/cart', CartController::class);
