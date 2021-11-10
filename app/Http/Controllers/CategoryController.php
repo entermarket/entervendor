@@ -20,8 +20,8 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
-        if(auth('store_api')->id() != $brand->store_id) return response('Unauthorised', 401);
-        $store = Store::find($request->store_id);
+        if(!auth('store_api')->id()) return response('Unauthorised', 401);
+        $store =auth('store_api')->user();
         return $store->categories()->create([
             'name' => $request->name
         ]);
@@ -30,15 +30,19 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
-        if(auth('store_api')->id() != $brand->store_id) return response('Unauthorised', 401);
+        if(auth('store_api')->id() != $category->store_id) return response('Unauthorised', 401);
         $category->name = $request->name;
         $category->save();
         return $category;
     }
     public function destroy(Category $category)
     {
-        if(auth('store_api')->id() != $brand->store_id) return response('Unauthorised', 401);
+       
+        $id =  $category->id;
+        if(auth('store_api')->id() != $category->store_id) return response('Unauthorised', 401);
         $category->delete();
-        return response()->json('deleted');
+        return response()->json([
+            'id'=> $id
+        ]);
     }
 }

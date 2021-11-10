@@ -20,6 +20,7 @@ class Product extends Model
         'batch_no',
         'in_stock',
         'category_id',
+        'brand_id',
         'store_id',
         'image',
         'sales_price',

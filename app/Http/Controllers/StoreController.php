@@ -41,7 +41,17 @@ class StoreController extends Controller
     {
         return $store;
     }
-
+    
+    public function update(Request $request){
+        $store = auth('store_api')->user();
+       try {
+        $store->name = $request->username;
+        $store->save();
+        return response('update successful');
+       } catch (\Throwable $th) {
+           throw $th;
+       }
+    }
     public function getstorecategories(Store $store)
     {
         return $store->categories()->get();

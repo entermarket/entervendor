@@ -96,6 +96,7 @@ Route::middleware(['auth:api'])->group(function () {
 //Store routes
 Route::get('store/categories/{store}', [StoreController::class, 'getstorecategories']);
 Route::post('store/login', [StoreController::class, 'login']);
+Route::middleware('auth:store_api')->post('store/update', [StoreController::class, 'update']);
 Route::apiResource('stores', StoreController::class);
 
 // categories

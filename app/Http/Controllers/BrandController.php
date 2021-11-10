@@ -19,7 +19,7 @@ class BrandController extends Controller
     public function store(Request $request)
     {
        
-        $store = Store::find($request->store_id);
+        $store = auth('store_api')->user();
         return $store->brands()->create([
             'name' => $request->name
         ]);
@@ -35,8 +35,11 @@ class BrandController extends Controller
     }
     public function destroy(Brand $brand)
     {
+        $id =  $brand->id;
         if(auth('store_api')->id() != $brand->store_id) return response('Unauthorised', 401);
         $brand->delete();
-        return response()->json('deleted');
+        return response()->json([
+            'id'=> $id
+        ]);
     }
 }
