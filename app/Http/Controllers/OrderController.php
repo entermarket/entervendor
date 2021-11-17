@@ -21,7 +21,7 @@ class OrderController extends Controller
     {
         return $this->user->orders()->with('orderhistories', 'orderinfo')->latest()->get();
     }
-    
+
     public function storeorders()
     {
         return auth('store_api')->user()->orders()->with('orderhistories', 'orderinfo')->latest()->get();
@@ -30,12 +30,11 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
-
-
+        $name = $request->input('name') ? $request->input('name') : 'Order-' . rand(0000, 9999);
 
         return $this->orderService->create(
             $this->user,
-            $request->name,
+            $name,
             $request->shipping ? $request->shipping : 0,
             $request->coupon,
             $request->commission,

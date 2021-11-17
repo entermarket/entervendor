@@ -22,6 +22,7 @@ class Order extends Model
         'promo',
         'discount',
         'grand_total',
+        'shipping_method',
         'user_id',
         'items',
         'title', 'isScheduled', 'schedule_time'

@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Store;
+use App\Models\Product;
 use App\Models\Wishlist;
 use App\Models\WishlistItem;
-use App\Services\WishlistService;
 use Illuminate\Http\Request;
+use App\Services\CartService;
+use App\Services\WishlistService;
+use Illuminate\Support\Facades\DB;
 
 class WishlistController extends Controller
 {
@@ -40,6 +44,27 @@ class WishlistController extends Controller
     {
         $wishlistItem->delete();
         return $this->response_success('removed');
+    }
+
+    public function addlisttocart(Wishlist $wishlist)
+    {
+
+
+        return  DB::transaction(function () use ($wishlist) {
+            $items = $wishlist->load('wishlistitems')->wishlistitems;
+            $cart = new CartService;
+            // $user, $store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id
+            foreach ($items as  $item) {
+                $store =  Store::find($item->store_id);
+                $product = Product::find($item->product_id);
+                $storeName = $store->name;
+                $cart->add($this->user, $storeName, $product->product_name, $product->product_name, $product->price, 1, $product->product_desc, $product->image, $item->store_id, $item->product_id);
+                $item->delete();
+            }
+
+
+            return response('created', 200);
+        });
     }
 
     public function destroyall()

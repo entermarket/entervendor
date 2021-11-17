@@ -45,11 +45,11 @@ class CartService
         'data' => $item
       ], 201);
     } else {
-      // $newcart->store_name = $store_name;
-      // $newcart->brand_name = $brand_name;
-      // $newcart->price = $price;
-      // $newcart->quantity =  $newcart->quantity + $quantity;
-      // $newcart->save();
+      $newcart->store_name = $store_name;
+      $newcart->brand_name = $brand_name;
+      $newcart->price = $price;
+      $newcart->quantity =  $newcart->quantity + $quantity;
+      $newcart->save();
 
       return response()->json([
         'status' => 'in_cart',

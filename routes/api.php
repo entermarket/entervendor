@@ -51,7 +51,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('user/orders', OrderController::class);
 
 
-    Route::middleware('auth:store_api')->get('store/report',[ StoreOrderController::class, 'gettotals']);
+    Route::middleware('auth:store_api')->get('store/report', [StoreOrderController::class, 'gettotals']);
     Route::middleware('auth:store_api')->get('store/earnings', [StoreOrderController::class, 'getearnings']);
     Route::middleware('auth:store_api')->get('top/earnings', [StoreOrderController::class, 'gettopearner']);
     Route::middleware('auth:store_api')->apiResource('storeorders', StoreOrderController::class);
@@ -90,6 +90,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('transaction/verify/{reference}', [BankDetailController::class, 'verifytransaction']);
     Route::post('transaction/verify', [BankDetailController::class, 'transactionevent']);
     Route::post('payviame/payment', [BankDetailController::class, 'paybypayviame']);
+
+    Route::get('add-wishlist/{wishlist}', [WishlistController::class, 'addlisttocart']);
 });
 
 
@@ -116,6 +118,7 @@ Route::apiResource('products', ProductController::class);
 //Wishlist routes
 Route::post('clear/wishlists', [WishlistController::class, 'destroyall']);
 Route::post('wishlist/item', [WishlistController::class, 'storeitem']);
+
 Route::delete('wishlist/item/{wishlistitem}', [WishlistController::class, 'destroyitem']);
 Route::apiResource('wishlists', WishlistController::class);
 

@@ -89,7 +89,9 @@ class OrderService
         return $a + $b;
       });
 
-
+      if ($shipping_method === 'schedule') {
+        $isScheduled = true;
+      }
       //create order
       $order =  $user->orders()->create([
         'order_no' => $order_no,
@@ -107,11 +109,17 @@ class OrderService
         'isScheduled' => $isScheduled,
         'schedule_time' => $schedule_time,
         'items' => $items,
+        'shipping_method' => $shipping_method,
 
       ]);
 
       $order->orderhistories()->createMany($usercart->toArray());
-      $user->storeorder()->createMany($usercart->toArray());
+
+      $mappedarray = array_map(function ($a) use ($order_no) {
+        $a['order_no'] = $order_no;
+        return $a;
+      }, $usercart->toArray());
+      $user->storeorder()->createMany($mappedarray);
 
       //update order information
       $order->orderinfo()->create([
@@ -158,7 +166,7 @@ class OrderService
 
 
 
-      // clear cart 
+      // clear cart
       $cartservice->clearcart($user);
 
 
