@@ -98,6 +98,7 @@ Route::middleware(['auth:api'])->group(function () {
 //Store routes
 Route::get('store/categories/{store}', [StoreController::class, 'getstorecategories']);
 Route::post('store/login', [StoreController::class, 'login']);
+Route::post('get/stores', [StoreController::class, 'getallstores']);
 Route::middleware('auth:store_api')->post('store/update', [StoreController::class, 'update']);
 Route::apiResource('stores', StoreController::class);
 
@@ -177,3 +178,5 @@ Route::post('password/reset', [UserController::class, 'changePasswordByOtp']);
 Route::get('get/banks', [BankDetailController::class, 'getbanks']);
 Route::get('get/bank/detail', [BankDetailController::class, 'getbankdetail']);
 Route::apiResource('bank/details', BankDetailController::class);
+
+Route::post('get/coordinates', [UserController::class, 'getcoordinates']);

@@ -25,6 +25,11 @@ class StoreController extends Controller
         return $this->storeservice->showallstores();
     }
 
+    public function getallstores(Request $request)
+    {
+        return $this->storeservice->getallstores($request);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -32,7 +37,7 @@ class StoreController extends Controller
             'email' => 'bail|required|unique:stores',
             'password' => 'required|min:6',
             'images'=> 'required'
-           
+
         ]);
         return $this->storeservice->createstore($request);
     }
@@ -41,7 +46,7 @@ class StoreController extends Controller
     {
         return $store;
     }
-    
+
     public function update(Request $request){
         $store = auth('store_api')->user();
        try {
@@ -64,7 +69,7 @@ class StoreController extends Controller
 
     public function login(Request $request)
     {
-       
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|string',
             'password' => 'required|min:6',
@@ -124,7 +129,7 @@ class StoreController extends Controller
         return $payviame_token;
     }
 
-   
+
     public function logout()
     {
 
@@ -166,5 +171,5 @@ class StoreController extends Controller
         ], 200);
     }
 
-  
+
 }

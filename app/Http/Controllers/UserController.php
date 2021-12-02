@@ -10,10 +10,12 @@ use Carbon\Carbon;
 use App\Models\Otp;
 use App\Models\User;
 use App\Mail\OtpReset;
+use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Mail\PasswordResetMail;
+use Spatie\Geocoder\Geocoder;
 use App\Notifications\NewUser;
+use App\Mail\PasswordResetMail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
@@ -27,7 +29,7 @@ class UserController extends Controller
     public function __construct()
     {
 
-        $this->middleware("auth:api", ["except" => ["login", "register", "show", "postEmail", "updatePassword", "changePasswordByOtp", "createotp"]]);
+        $this->middleware("auth:api", ["except" => ["getcoordinates","login", "register", "show", "postEmail", "updatePassword", "changePasswordByOtp", "createotp"]]);
         $this->user = new User;
     }
     public function register(Request $request)
@@ -140,6 +142,21 @@ class UserController extends Controller
                 "error" => $responseMessage
             ], 422);
         }
+    }
+
+    public function getcoordinates(Request $request){
+
+        $client = new \GuzzleHttp\Client();
+
+        $geocoder = new Geocoder($client);
+
+        $geocoder->setApiKey(config('geocoder.key'));
+
+        $geocoder->setCountry(config('geocoder.country', 'US'));
+
+        $geocoder->getCoordinatesForAddress('Infinite Loop 1, Cupertino');
+
+       return $geocoder->response();
     }
     public function getpayviametoken()
     {

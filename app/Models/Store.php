@@ -23,7 +23,9 @@ class Store extends Authenticatable
         'db_username',
         'db_password',
         'email',
-        'password'
+        'password',
+        'lat',
+        'long'
     ];
 
     public function products()
@@ -51,7 +53,7 @@ class Store extends Authenticatable
         "db_host",
         "db_username",
         "db_password",
-     
+
         'password'
     ];
 }
