@@ -51,11 +51,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('user/orders', OrderController::class);
 
 
-    Route::middleware('auth:store_api')->get('store/report', [StoreOrderController::class, 'gettotals']);
-    Route::middleware('auth:store_api')->get('store/earnings', [StoreOrderController::class, 'getearnings']);
-    Route::middleware('auth:store_api')->get('top/earnings', [StoreOrderController::class, 'gettopearner']);
-    Route::middleware('auth:store_api')->apiResource('storeorders', StoreOrderController::class);
-
 
     // Cart
     Route::apiResource('user/cart', CartController::class);
@@ -100,6 +95,13 @@ Route::get('store/categories/{store}', [StoreController::class, 'getstorecategor
 Route::post('store/login', [StoreController::class, 'login']);
 Route::post('get/stores', [StoreController::class, 'getallstores']);
 Route::middleware('auth:store_api')->post('store/update', [StoreController::class, 'update']);
+Route::middleware('auth:store_api')->get('store/report', [StoreOrderController::class, 'gettotals']);
+Route::middleware('auth:store_api')->get('store/earnings', [StoreOrderController::class, 'getearnings']);
+Route::middleware('auth:store_api')->get('top/earnings', [StoreOrderController::class, 'gettopearner']);
+Route::middleware('auth:store_api')->get('store/get/products', [StoreController::class, 'storegetproducts']);
+Route::middleware('auth:store_api')->apiResource('storeorders', StoreOrderController::class);
+
+
 Route::apiResource('stores', StoreController::class);
 
 // categories

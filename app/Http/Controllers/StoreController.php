@@ -25,6 +25,12 @@ class StoreController extends Controller
         return $this->storeservice->showallstores();
     }
 
+
+    public function storegetproducts()
+    {
+        $store= auth('store_api')->user();
+        return $store->products()->with('store','category')->get();
+    }
     public function getallstores(Request $request)
     {
         return $this->storeservice->getallstores($request);

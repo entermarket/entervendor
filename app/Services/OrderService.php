@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Controllers\BankDetailController;
 use App\Models\Order;
+use App\Models\Product;
 use App\Notifications\OrderCreated;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -120,7 +121,7 @@ class OrderService
         return $a;
       }, $usercart->toArray());
       $user->storeorder()->createMany($mappedarray);
-
+      $this->reducequantity($usercart);
       //update order information
       $order->orderinfo()->create([
         'user_id' => $user->id,
@@ -145,11 +146,9 @@ class OrderService
       $user->phoneNumber =  $phoneNumber;
       $user->save();
 
-
-
       $detail = [
-        'message' => 'Order created',
-        'url' => 'http://entermarket.com'
+        'message' => 'Your order has been created',
+        'url' => 'http://entermarket.net/profile?showing=4'
       ];
       $user->notify(new OrderCreated($detail));
       $myrequest = new Request();
@@ -191,8 +190,14 @@ class OrderService
     // }
   }
 
-  public function update()
+  public function reducequantity($cartitems)
   {
+
+    foreach ($cartitems as $item) {
+     $product  = Product::find($item->product_id);
+     $product->in_stock = $product->in_stock  - $item->quantity;
+     $product->save();
+    }
   }
 
   public function remove($order)

@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Http\Resources\StoreResource;
 use App\Models\Store;
+use App\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 
 class StoreService
@@ -30,18 +32,21 @@ class StoreService
   public function getallstores($request)
   {
 
+
     $stores = Store::get();
-    return $stores->map(function ($a) use ($request) {
+    $result = $stores->map(function ($a) use ($request) {
       $a['distance'] = $this->distanceCalculation($request['lat'], $request['long'], $a['lat'], $a['long']);
       return $a;
-    })->sort(function ($a, $b) {
-      return $a['distance'] >  $b['distance'];
-    })->values()->all();
+    })->sortBy(function ($a) {
+      return $a['distance'] ;
+    });
+
+    return  StoreResource::collection($result->values()->paginate(30));
   }
   public function showallstores()
   {
 
-    return Store::all();
+    return Store::paginate(2);
   }
   public  function distanceCalculation($point1_lat, $point1_long, $point2_lat, $point2_long, $unit = 'mi', $decimals = 2)
   {

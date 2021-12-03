@@ -27,6 +27,10 @@ class Product extends Model
         'active'
     ];
 
+    protected $casts = [
+        'image'=>'array'
+    ];
+
     public function store()
     {
         return $this->belongsTo(Store::class);
