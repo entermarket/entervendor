@@ -33,7 +33,7 @@ class StoreService
   {
 
 
-    $stores = Store::get();
+    $stores = Store::latest()->get();
     $result = $stores->map(function ($a) use ($request) {
       $a['distance'] = $this->distanceCalculation($request['lat'], $request['long'], $a['lat'], $a['long']);
       return $a;
@@ -46,7 +46,7 @@ class StoreService
   public function showallstores()
   {
 
-    return Store::paginate(2);
+   return StoreResource::collection(Store::latest()->paginate(30));
   }
   public  function distanceCalculation($point1_lat, $point1_long, $point2_lat, $point2_long, $unit = 'mi', $decimals = 2)
   {

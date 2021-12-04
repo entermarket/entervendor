@@ -42,9 +42,11 @@ class StoreController extends Controller
 
             'email' => 'bail|required|unique:stores',
             'password' => 'required|min:6',
-            'images'=> 'required'
+            'image'=> 'required'
 
         ]);
+
+
         return $this->storeservice->createstore($request);
     }
 
