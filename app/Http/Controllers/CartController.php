@@ -45,7 +45,7 @@ class CartController extends Controller
             $product->price,
             $quantity,
             $product->product_desc,
-            $product->image,
+            $product->image[0],
             $store->id,
             $product->id,
         );

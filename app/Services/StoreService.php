@@ -11,13 +11,15 @@ class StoreService
 {
   public function createstore($request)
   {
-    if (!count($request->images)) return response('Upload an image', 422);
+
+
+
     return  Store::create([
       'name' => $request->name,
       'email' => $request->email,
       'password' => Hash::make($request->password),
       'location'  => $request->location,
-      'image'  => $request->images[0]['preview'],
+      'image'  => $request->image,
       'connection'  => 'null',
       'api_endpoint'  => 'null',
       'db_host'  => 'null',
