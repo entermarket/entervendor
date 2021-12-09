@@ -15,23 +15,23 @@ class ProductController extends Controller
 
     public function index()
     {
-        return Product::with('store', 'category')->get();
+        return Product::with('store', 'category', 'brand')->get();
     }
 
     public function storeproducts(Request $request)
     {
-        return Product::with('store', 'category')->where('store_id', $request->store_id)->where('category_id', $request->category_id)->get();
+        return Product::with('store', 'category', 'brand')->where('store_id', $request->store_id)->where('category_id', $request->category_id)->get();
     }
 
     public function allstoreproducts(Request $request)
     {
-        $product = Product::with('store', 'category')->where('store_id', $request->store_id)->where('active', 1)->get();
+        $product = Product::with('store', 'category', 'brand')->where('store_id', $request->store_id)->where('active', 1)->get();
         return ProductResource::collection($product->values()->paginate(30));
     }
 
     public function show(Product $product)
     {
-        return $product->load('store', 'category');
+        return $product->load('store', 'category','brand');
     }
     public function store(Request $request)
     {
@@ -42,7 +42,7 @@ class ProductController extends Controller
         $data['image'] = $request->images;
         $data['product_no'] = rand(000000, 999999);
         $product = $store->products()->create($data);
-        return $product->load('store', 'category');
+        return $product->load('store', 'category','brand');
     }
 
 
@@ -77,13 +77,13 @@ class ProductController extends Controller
 
 
         $product->save();
-        return $product->load('category');
+        return $product->load('category','brand');
     }
 
     public function getsimilarproducts($id)
     {
         $product = Product::find($id);
-        $similar = Product::with('store', 'category')->where(strtolower('product_name'), 'like', '%' . strtolower($product->product_name) . '%')
+        $similar = Product::with('store', 'category', 'brand')->where(strtolower('product_name'), 'like', '%' . strtolower($product->product_name) . '%')
             ->where('id',  '!=', $id)->get();
         return $similar;
     }

@@ -14,14 +14,15 @@ class BrandController extends Controller
     }
     public function show( $brandId)
     {
-        return Brand::where('store_id', $brandId)->get();
+        return Brand::with('category')->where('store_id', $brandId)->get();
     }
     public function store(Request $request)
     {
-       
+
         $store = auth('store_api')->user();
         return $store->brands()->create([
-            'name' => $request->name
+            'name' => $request->name,
+            'category_id' => intval($request->id)
         ]);
     }
     public function update( Request $request, Brand $brand)
