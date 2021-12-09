@@ -29,7 +29,7 @@ class StoreController extends Controller
     public function storegetproducts()
     {
         $store= auth('store_api')->user();
-        return $store->products()->with('store','category')->get();
+        return $store->products()->with('store','category','brand')->get();
     }
     public function getallstores(Request $request)
     {
