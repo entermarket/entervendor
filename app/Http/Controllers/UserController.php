@@ -29,7 +29,7 @@ class UserController extends Controller
     public function __construct()
     {
 
-        $this->middleware("auth:api", ["except" => ["getcoordinates","login", "register", "show", "postEmail", "updatePassword", "changePasswordByOtp", "createotp"]]);
+        $this->middleware("auth:api", ["except" => ["getcoordinates", "login", "register", "show", "postEmail", "updatePassword", "changePasswordByOtp", "createotp"]]);
         $this->user = new User;
     }
     public function register(Request $request)
@@ -144,7 +144,8 @@ class UserController extends Controller
         }
     }
 
-    public function getcoordinates(Request $request){
+    public function getcoordinates(Request $request)
+    {
 
         $client = new \GuzzleHttp\Client();
 
@@ -156,7 +157,7 @@ class UserController extends Controller
 
         $geocoder->getCoordinatesForAddress('Infinite Loop 1, Cupertino');
 
-       return $geocoder->response();
+        return $geocoder->response();
     }
     public function getpayviametoken()
     {
@@ -206,7 +207,7 @@ class UserController extends Controller
 
         $maildata = [
             'title' => 'Password Reset',
-            'url' => 'http://localhost:3000/reset-password/?token=' . $token . '&action=password_reset'
+            'url' => 'https://localhost:3000/reset-password/?token=' . $token . '&action=password_reset'
         ];
 
         Mail::to($credentials['email'])->send(new PasswordResetMail($maildata));
@@ -344,17 +345,44 @@ class UserController extends Controller
         $day = $request->date;
         $dob = Carbon::createFromDate($request->year, $request->month, $request->date, 'Africa/Lagos')->format('d/m/Y');
 
-        $user->firstName = $request->firstName;
-        $user->lastName = $request->surname;
-        $user->email = $request->email;
-        $user->address  = $request->address;
-        $user->dob = $dob;
-        $user->gender = $request->gender;
-        $user->city = $request->city;
-        $user->state = $request->state;
-        $user->country  = $request->country;
-        $user->phoneNumber = $request->phone;
-        $user->profileImage = $request->profileImage;
+        if ($request->has('firstName') && $request->filled('firstName') && !is_null($request->input('firstName'))) {
+            $user->firstName = $request->firstName;
+        }
+        if ($request->has('surname') && $request->filled('surname') && !is_null($request->input('surname'))) {
+            $user->lastName = $request->surname;
+        }
+        if ($request->has('email') && $request->filled('email') && !is_null($request->input('email'))) {
+            $user->email = $request->email;
+        }
+
+        if ($request->has('address') && $request->filled('address') && !is_null($request->input('address'))) {
+            $user->address  = $request->address;
+        }
+        if ($request->has('dob') && $request->filled('dob') && !is_null($request->input('dob'))) {
+            $user->dob = $dob;
+        }
+        if ($request->has('gender') && $request->filled('gender') && !is_null($request->input('gender'))) {
+            $user->gender = $request->gender;
+        }
+        if ($request->has('city') && $request->filled('city') && !is_null($request->input('city'))) {
+            $user->city = $request->city;
+        }
+        if ($request->has('state') && $request->filled('state') && !is_null($request->input('state'))) {
+            $user->state = $request->state;
+        }
+
+        if ($request->has('country') && $request->filled('country') && !is_null($request->input('country'))) {
+
+            $user->country  = $request->country;
+        }
+        if ($request->has('phoneNumber') && $request->filled('phoneNumber') && !is_null($request->input('phoneNumber'))) {
+            $user->phoneNumber = $request->phone;
+        }
+        if ($request->has('profileImage') && $request->filled('profileImage') && !is_null($request->input('profileImage'))) {
+            $user->profileImage = $request->profileImage;
+        }
+
+
         $user->save();
         return $user;
     }
@@ -448,12 +476,10 @@ class UserController extends Controller
     public function storeUploads(Request $request)
     {
 
-        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
         $user = auth('api')->user();
-        $user->profileImage = $response;
+        $user->profileImage = $request->profileImage;
         $user->save();
-
-        dd($response);
+        return $user;
     }
 
     public function destroy(User $user)
