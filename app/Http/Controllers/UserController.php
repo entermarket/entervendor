@@ -148,16 +148,21 @@ class UserController extends Controller
     {
 
         $client = new \GuzzleHttp\Client();
-
         $geocoder = new Geocoder($client);
-
         $geocoder->setApiKey(config('geocoder.key'));
+        // $geocoder->setCountry(config('geocoder.country', 'Nigeria'));
+        $response = $geocoder->getCoordinatesForAddress($request->address);
+        $lat = $response['lat'];
+        $long = $response['lng'];
+        $formatted_address = $response['formatted_address'];
+       $place = $response['address_components'][2]->long_name;
 
-        $geocoder->setCountry(config('geocoder.country', 'US'));
 
-        $geocoder->getCoordinatesForAddress('Infinite Loop 1, Cupertino');
-
-        return $geocoder->response();
+        return [
+            'lat' => $lat,
+            'long' => $long,
+            'address' => $formatted_address
+        ];
     }
     public function getpayviametoken()
     {

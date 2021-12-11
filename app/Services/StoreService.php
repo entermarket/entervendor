@@ -2,30 +2,29 @@
 
 namespace App\Services;
 
-use App\Http\Resources\StoreResource;
 use App\Models\Store;
 use App\Support\Collection;
+use Spatie\Geocoder\Geocoder;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\StoreResource;
 
 class StoreService
 {
   public function createstore($request)
   {
+    $client = new \GuzzleHttp\Client();
+    $geocoder = new Geocoder($client);
+    $geocoder->setApiKey(config('geocoder.key'));
+    // $geocoder->setCountry(config('geocoder.country', 'Nigeria'));
+    $data = $request->all();
+    $response = $geocoder->getCoordinatesForAddress($request->location);
 
+    $data['lat'] = $response['lat'];
+    $data['long'] = $response['lng'];
+    $data['location'] = $response['formatted_address'];
+    $data['place'] = $response['address_components'][2]->long_name;
 
-
-    return  Store::create([
-      'name' => $request->name,
-      'email' => $request->email,
-      'password' => Hash::make($request->password),
-      'location'  => $request->location,
-      'image'  => $request->image,
-      'connection'  => 'null',
-      'api_endpoint'  => 'null',
-      'db_host'  => 'null',
-      'db_username'  => $request->db_username,
-      'db_password'  => $request->db_password
-    ]);
+    return  Store::create($data);
   }
   public function findStoreById()
   {

@@ -25,7 +25,8 @@ class Store extends Authenticatable
         'email',
         'password',
         'lat',
-        'long'
+        'long',
+        'place'
     ];
 
     public function products()
@@ -46,14 +47,19 @@ class Store extends Authenticatable
     }
 
     protected $hidden = [
-        'created_at',
         'updated_at',
         "connection",
         "api_endpoint",
         "db_host",
         "db_username",
         "db_password",
-
         'password'
+    ];
+    protected $attributes = [
+        "connection" =>'null',
+        "api_endpoint" => 'null',
+        "db_host" => 'null',
+        "db_username" => 'null',
+        "db_password" => 'null',
     ];
 }

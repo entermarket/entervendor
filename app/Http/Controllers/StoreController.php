@@ -46,7 +46,6 @@ class StoreController extends Controller
 
         ]);
 
-
         return $this->storeservice->createstore($request);
     }
 
