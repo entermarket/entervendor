@@ -113,6 +113,7 @@ Route::apiResource('brands', BrandController::class);
 // Products
 
 Route::post('store/products', [ProductController::class, 'storeproducts']);
+Route::post('bulk/upload', [ProductController::class, 'bulkupload']);
 Route::post('store/products/all', [ProductController::class, 'allstoreproducts']);
 Route::get('similar/products/{id}', [ProductController::class, 'getsimilarproducts']);
 Route::middleware('auth:store_api')->post('product/add', [ProductController::class, 'store']);

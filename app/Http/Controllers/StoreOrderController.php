@@ -16,20 +16,20 @@ class StoreOrderController extends Controller
             'quantity' => $request->quantity,
             'price' => $request->price,
             'product_id' => $request->product_id,
-            'store_id' => $request->store_id
+            'store_id' => $request->store_id,
         ]);
     }
 
     public function index()
     {
-        return auth('store_api')->user()->storeorders()->with('product')->latest()->get();
+        return auth('store_api')->user()->storeorders()->with('product')->where('payment_status', 'paid')->latest()->get();
     }
 
     public function gettotals()
     {
         $store = auth('store_api')->user();
 
-        $orders  = $store->storeorders()->get();
+        $orders  = $store->storeorders()->where('payment_status', 'paid')->get();
         $products  = $store->products()->get();
         $outofstocks = $products->filter(function ($a) {
             return !$a->in_stock;
@@ -38,7 +38,7 @@ class StoreOrderController extends Controller
             return $a->in_stock;
         });
 
-        $ordersthismonth = $store->storeorders()->whereMonth('created_at', '=', Carbon::now()->month)->whereYear('created_at', '=', Carbon::now()->year)->get();
+        $ordersthismonth = $store->storeorders()->where('payment_status', 'paid')->whereMonth('created_at', '=', Carbon::now()->month)->whereYear('created_at', '=', Carbon::now()->year)->get();
 
 
         return response([
@@ -76,24 +76,24 @@ class StoreOrderController extends Controller
     public function gettopearner()
     {
         $store = auth('store_api')->user();
-        return  $store->storeorders()->with('product')->whereMonth('created_at', '=', Carbon::now()->month)->whereYear('created_at', '=', Carbon::now()->year)->orderByDesc('subtotal')->take(5)->get();
+        return  $store->storeorders()->where('payment_status', 'paid')->with('product')->whereMonth('created_at', '=', Carbon::now()->month)->whereYear('created_at', '=', Carbon::now()->year)->orderByDesc('subtotal')->take(5)->get();
     }
 
     public function getearnings()
     {
         $store = auth('store_api')->user();
-        $orders  = $store->storeorders()->get()->map(function ($q) {
+        $orders  = $store->storeorders()->where('payment_status', 'paid')->get()->map(function ($q) {
             return $q->subtotal;
         })->reduce(function ($a, $b) {
             return $a + $b;
         },0);
-        $ordersthismonth = $store->storeorders()->whereMonth('created_at', '=', Carbon::now()->month)->whereYear('created_at', '=', Carbon::now()->year)->get()->map(function ($q) {
+        $ordersthismonth = $store->storeorders()->where('payment_status', 'paid')->whereMonth('created_at', '=', Carbon::now()->month)->whereYear('created_at', '=', Carbon::now()->year)->get()->map(function ($q) {
             return $q->subtotal;
         })->reduce(function ($a, $b) {
             return $a + $b;
         },0);
 
-        $orderslastmonth = $store->storeorders()->whereMonth('created_at', '=', Carbon::now()->subMonth())->whereYear('created_at', '=', Carbon::now()->year)->get()->map(function ($q) {
+        $orderslastmonth = $store->storeorders()->where('payment_status', 'paid')->whereMonth('created_at', '=', Carbon::now()->subMonth())->whereYear('created_at', '=', Carbon::now()->year)->get()->map(function ($q) {
             return $q->subtotal;
         })->reduce(function ($a, $b) {
             return $a + $b;
@@ -101,12 +101,12 @@ class StoreOrderController extends Controller
 
         function sortOrders($month){
             $store = auth('store_api')->user();
-          return  $store->storeorders()->whereMonth('created_at', '=',$month)->whereYear('created_at', '=', Carbon::now()->year)->get()->map(function ($q) {
+          return  $store->storeorders()->where('payment_status', 'paid')->whereMonth('created_at', '=',$month)->whereYear('created_at', '=', Carbon::now()->year)->get()->map(function ($q) {
                 return $q->subtotal;
             })->reduce(function ($a, $b) {
                 return ($a + $b) | 0;
             },0);
-    
+
         }
         $earningData = [];
         $a = 1;
@@ -114,8 +114,8 @@ class StoreOrderController extends Controller
             array_push($earningData, sortOrders($a));
             $a++;
         };
-   
-       
+
+
         return response([
             'earning' => $orders,
             'earningthismonth' => $ordersthismonth,

@@ -31,7 +31,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        return $product->load('store', 'category','brand');
+        return $product->load('store', 'category', 'brand');
     }
     public function store(Request $request)
     {
@@ -39,11 +39,22 @@ class ProductController extends Controller
 
         $store = auth('store_api')->user();
         $data = $request->all();
-        $data['image'] = $request->images;
+        $data['image'] = $request->image;
         $data['product_no'] = rand(000000, 999999);
         $product = $store->products()->create($data);
-        return $product->load('store', 'category','brand');
+        return $product->load('store', 'category', 'brand');
     }
+
+    public function bulkupload(Request $request)
+    {
+
+
+         $store = auth('store_api')->user();
+        $products = $store->products()->createMany($request->all());
+        return $products->load('store', 'category', 'brand');
+    }
+
+
 
 
     public function update(Request $request, Product $product)
@@ -77,7 +88,7 @@ class ProductController extends Controller
 
 
         $product->save();
-        return $product->load('category','brand');
+        return $product->load('category', 'brand');
     }
 
     public function getsimilarproducts($id)

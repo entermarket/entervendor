@@ -28,8 +28,15 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'image'=>'array'
+        'image' => 'array'
     ];
+
+function save(array $options = array()) {
+   if (empty($this->product_no)) {
+      $this->product_no = rand(0000000,999999);
+   }
+   return parent::save($options);
+}
 
     public function store()
     {

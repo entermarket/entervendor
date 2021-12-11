@@ -9,7 +9,7 @@ class StoreOrder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['quantity','price','subtotal','user_id', 'store_id', 'product_id','order_no'];
+    protected $fillable = ['quantity','price','subtotal','user_id', 'store_id', 'product_id','order_no','payment_status'];
     public function store(){
         return $this->belongsTo(Store::class);
     }

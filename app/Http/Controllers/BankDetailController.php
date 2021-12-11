@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Events\TransactionSuccessful;
+use App\Models\StoreOrder;
 
 class BankDetailController extends Controller
 {
@@ -149,10 +150,13 @@ class BankDetailController extends Controller
                         $order = Order::find($transaction->order_id);
                         $order->payment_status = 'paid';
                         $order->save();
+
+                        StoreOrder::where('order_id', $transaction->order_id)->update(['payment_status', 'paid']);
                     } else {
                         $order = Order::find($transaction->order_id);
                         $order->payment_status = 'failed';
                         $order->save();
+                        StoreOrder::where('order_id', $transaction->order_id)->update(['payment_status', 'failed']);
                     }
 
                     return response()->json([
