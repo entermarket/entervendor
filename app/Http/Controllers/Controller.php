@@ -27,6 +27,16 @@ class Controller extends BaseController
             "token_type" => "bearer",
         ], 200);
     }
+    public function respondWithOnlyToken($token,$responseMessage, $data)
+    {
+        return \response()->json([
+            "success" => true,
+            "message" => $responseMessage,
+            "data" => $data,
+            "token" => $token,
+            "token_type" => "bearer",
+        ], 200);
+    }
 
     public function response_success($data)
     {

@@ -12,6 +12,9 @@ class Order extends Model
 
     protected $fillable = [
         'order_no',
+        'weight',
+        'logistic_status',
+        'logistic',
         'name',
         'payment_status',
         'status',
@@ -42,7 +45,7 @@ class Order extends Model
     }
     public function orderhistories()
     {
-        return $this->hasMany(OrderHistory::class);
+        return $this->hasMany(OrderHistory::class)->with('stores');
     }
     public function orderinfo()
     {

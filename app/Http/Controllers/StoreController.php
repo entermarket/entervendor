@@ -105,16 +105,8 @@ class StoreController extends Controller
         $user =  Auth::guard('store')->user();
             $accessToken =$user->createToken('authToken')->accessToken;
             $responseMessage = "login successful";
-            $data = [
-                'email' => 'entermarket@payviame.com',
-                'password' => 'almond.2',
-            ];
 
-            // $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
-            // $payviame_token = $response->json()['access_token'];
-
-
-            return $this->respondWithToken($accessToken,'', $responseMessage, $user);
+            return $this->respondWithOnlyToken($accessToken, $responseMessage, $user);
         } else {
             $responseMessage = "invalid credentials";
             return response()->json([

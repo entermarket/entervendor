@@ -18,4 +18,8 @@ class OrderHistory extends Model
     {
         return $this->belongsTo(Order::class);
     }
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
 }

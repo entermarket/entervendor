@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
@@ -19,8 +20,22 @@ class OrderController extends Controller
 
     public function index()
     {
-        return $this->user->orders()->with('orderhistories', 'orderinfo')->latest()->get();
+        return $this->user->orders()->with('orderhistories', 'orderinfo')->where('payment_status', 'paid')->latest()->get();
     }
+
+    public function adminindex()
+    {
+        return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->latest()->get());
+    }
+    public function adminorderspending()
+    {
+        return Order::with('orderhistories', 'orderinfo')->where('status', 'pending')->where('payment_status', 'paid')->latest()->get();
+    }
+    public function adminordersassigned()
+    {
+        return Order::with('orderhistories', 'orderinfo')->where('status', 'assigned')->where('payment_status', 'paid')->latest()->get();
+    }
+
 
     public function storeorders()
     {
@@ -62,7 +77,12 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return $order;
+
+        return $order->load('orderhistories', 'orderinfo');
+    }
+    public function adminshow(Order $order)
+    {
+
         return $order->load('orderhistories', 'orderinfo');
     }
 
@@ -84,10 +104,24 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Order $order)
+    public function updateorderstatus(Request $request, Order $order)
     {
-        //
+        $order->status = $request->status;
+        $order->save();
+        return $order->load('orderhistories', 'orderinfo');
     }
+    public function assignlogistic(Request $request, Order $order)
+    {
+        $order->status = $request->status;
+        $order->save();
+        return $order->load('orderhistories', 'orderinfo');
+    }
+
+    public function queryorder(Order $order)
+    {
+        return $order;
+    }
+
 
     /**
      * Remove the specified resource from storage.

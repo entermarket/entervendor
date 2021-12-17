@@ -11,6 +11,7 @@ class Product extends Model
     use HasFactory, HasApiTokens;
 
     protected $fillable = [
+        'weight',
         'product_name',
         'product_desc',
         'price',
