@@ -45,7 +45,7 @@ class Order extends Model
     }
     public function orderhistories()
     {
-        return $this->hasMany(OrderHistory::class)->with('stores');
+        return $this->hasMany(OrderHistory::class)->with('store');
     }
     public function orderinfo()
     {
