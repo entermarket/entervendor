@@ -30,7 +30,7 @@ class AuthServiceProvider extends ServiceProvider
         if (!$this->app->routesAreCached()) {
 
             Passport::routes();
-            Passport::tokensExpireIn(now()->addDays(1));
+            //Passport::tokensExpireIn(now()->addDays(1));
         }
     }
 }

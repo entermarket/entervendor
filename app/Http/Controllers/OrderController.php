@@ -25,15 +25,15 @@ class OrderController extends Controller
 
     public function adminindex()
     {
-        return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->latest()->get());
+        return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->latest()->paginate(20));
     }
     public function adminorderspending()
     {
-        return Order::with('orderhistories', 'orderinfo')->where('status', 'pending')->where('payment_status', 'paid')->latest()->get();
+        return Order::with('orderhistories', 'orderinfo')->where('status', 'pending')->where('payment_status', 'paid')->latest()->paginate(20);
     }
     public function adminordersassigned()
     {
-        return Order::with('orderhistories', 'orderinfo')->where('status', 'assigned')->where('payment_status', 'paid')->latest()->get();
+        return Order::with('orderhistories', 'orderinfo')->where('status', 'assigned')->where('payment_status', 'paid')->latest()->paginate(20);
     }
 
 
