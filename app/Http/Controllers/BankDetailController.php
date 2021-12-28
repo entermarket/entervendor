@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\StoreOrder;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Services\CartService;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\OrderCreated;
 use Illuminate\Support\Facades\Http;
 use App\Events\TransactionSuccessful;
-use App\Models\StoreOrder;
-use App\Models\User;
-use App\Services\CartService;
 
 class BankDetailController extends Controller
 {
@@ -153,15 +154,20 @@ class BankDetailController extends Controller
                         $order->payment_status = 'paid';
                         $order->save();
 
-                        StoreOrder::where('order_id', $order->order_no)->update(['payment_status', 'paid']);
+                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status', 'paid']);
                         $cartservice = new CartService;
                         $user = User::find($order->user_id);
                         $cartservice->clearcart($user);
+                        $detail = [
+                            'message' => 'Your order has been created',
+                            'url' => 'http://entermarket.net/profile?showing=4'
+                        ];
+                        $user->notify(new OrderCreated($detail));
                     } else {
                         $order = Order::find($transaction->order_id);
                         $order->payment_status = 'failed';
                         $order->save();
-                        StoreOrder::where('order_id', $order->order_no)->update(['payment_status', 'failed']);
+                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status', 'failed']);
                     }
 
                     return response()->json([

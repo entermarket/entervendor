@@ -146,11 +146,7 @@ class OrderService
       $user->phoneNumber =  $phoneNumber;
       $user->save();
 
-      $detail = [
-        'message' => 'Your order has been created',
-        'url' => 'http://entermarket.net/profile?showing=4'
-      ];
-      $user->notify(new OrderCreated($detail));
+
       $myrequest = new Request();
       $myrequest->setMethod('POST');
       $myrequest->request->add([
