@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Events\TransactionSuccessful;
 use App\Models\StoreOrder;
+use App\Models\User;
+use App\Services\CartService;
 
 class BankDetailController extends Controller
 {
@@ -152,6 +154,9 @@ class BankDetailController extends Controller
                         $order->save();
 
                         StoreOrder::where('order_id', $transaction->order_id)->update(['payment_status', 'paid']);
+                        $cartservice = new CartService;
+                        $user = User::find($order->user_id);
+                        $cartservice->clearcart($user);
                     } else {
                         $order = Order::find($transaction->order_id);
                         $order->payment_status = 'failed';

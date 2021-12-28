@@ -166,7 +166,7 @@ class OrderService
 
 
       // clear cart
-      $cartservice->clearcart($user);
+      // $cartservice->clearcart($user);
 
 
       return response()->json(
