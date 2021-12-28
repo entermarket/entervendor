@@ -154,7 +154,7 @@ class BankDetailController extends Controller
                         $order->payment_status = 'paid';
                         $order->save();
 
-                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status', 'paid']);
+                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status'=> 'paid']);
                         $cartservice = new CartService;
                         $user = User::find($order->user_id);
                         $cartservice->clearcart($user);
@@ -167,7 +167,7 @@ class BankDetailController extends Controller
                         $order = Order::find($transaction->order_id);
                         $order->payment_status = 'failed';
                         $order->save();
-                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status', 'failed']);
+                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status'=> 'failed']);
                     }
 
                     return response()->json([
