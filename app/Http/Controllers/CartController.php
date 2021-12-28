@@ -37,7 +37,6 @@ class CartController extends Controller
         $product = Product::find($request->product_id);
         $quantity =  1;
 
-
         return  $this->cartservice->add(
             $this->user,
             $store->name,
@@ -46,7 +45,7 @@ class CartController extends Controller
             $product->sales_price? $product->sales_price:$product->price,
             $quantity,
             $product->product_desc,
-            $product->image,
+            $product->image[0],
             $store->id,
             $product->id,
         );
