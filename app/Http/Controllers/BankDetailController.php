@@ -476,6 +476,7 @@ class BankDetailController extends Controller
         return DB::transaction(function () use ($request) {
             $payment = $this->user->payments()->create([
                 'type' => $request->type,
+                'text' => $request->type.' payment',
                 'amount' => $request->amount,
                 'service' => $request->service,
                 'network' => $request->network,
