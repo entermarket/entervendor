@@ -24,6 +24,7 @@ class StoreService
     $data['location'] = $response['formatted_address'];
     $data['place'] = $response['address_components'][2]->long_name;
 
+    $data['password'] = Hash::make($data['password']);
     return  Store::create($data);
   }
   public function findStoreById()
