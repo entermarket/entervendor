@@ -37,7 +37,9 @@ class OrderResource extends JsonResource
             "shipping_method" => $this->shipping_method,
             'orderhistoriesitems' => count($this->orderhistories),
             'orderhistories' => $this->orderhistories,
-            'orderinfo' => $this->orderinfo
+            'orderinfo' => $this->orderinfo,
+            'logistic'=> $this->logistic,
+            'logistic_status' => $this->logistic_status
 
         ];
     }

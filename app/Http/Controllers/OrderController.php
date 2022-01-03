@@ -25,7 +25,7 @@ class OrderController extends Controller
 
     public function adminindex()
     {
-        return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->latest()->paginate(20));
+        return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->where('payment_status', 'paid')->latest()->paginate(20));
     }
     public function adminorderspending()
     {
@@ -112,7 +112,17 @@ class OrderController extends Controller
     }
     public function assignlogistic(Request $request, Order $order)
     {
-        $order->status = $request->status;
+
+        if ($request->has('status') && $request->filled('status')) {
+            $order->status = $request->status;
+        }
+        if ($request->has('logistic') && $request->filled('logistic')) {
+            $order->logistic = $request->logistic;
+        }
+        if ($request->has('logistic_status') && $request->filled('logistic_status')) {
+            $order->logistic_status = $request->logistic_status;
+        }
+
         $order->save();
         return $order->load('orderhistories', 'orderinfo');
     }

@@ -47,8 +47,10 @@ Route::middleware('auth:admin_api')->group(function () {
     Route::get('admin/get/orders', [OrderController::class, 'adminindex']);
     Route::get('admin/get/assigned/orders', [OrderController::class, 'adminordersassigned']);
     Route::get('admin/get/pending/orders', [OrderController::class, 'adminorderspending']);
-    Route::put('admin/update/order/status', [OrderController::class, 'updateorderstatus']);
+   // Route::put('admin/update/order/status/{order}', [OrderController::class, 'updateorderstatus']);
+    Route::put('admin/update/order/status/{order}', [OrderController::class, 'assignlogistic']);
     Route::get('queryorder/{order}', [OrderController::class, 'queryorder']);
+
 });
 
 

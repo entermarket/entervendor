@@ -80,6 +80,7 @@ class OrderService
         );
       }
       $total = $cartservice->total($user)['total'];
+      $weight = $cartservice->total($user)['weight'];
       $order_no = $this->generateUniqueCode();
 
       $grand_total = (intval($total) + intval($shipping_charges) + intval($commission)) - $discount;
@@ -111,6 +112,7 @@ class OrderService
         'schedule_time' => $schedule_time,
         'items' => $items,
         'shipping_method' => $shipping_method,
+        'weight'=> $weight
 
       ]);
 

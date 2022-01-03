@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Notifications\OrderCreated;
 use Illuminate\Support\Facades\Http;
 use App\Events\TransactionSuccessful;
+use App\Notifications\NewOrderAlert;
 
 class BankDetailController extends Controller
 {
@@ -162,7 +163,15 @@ class BankDetailController extends Controller
                             'message' => 'Your order has been created',
                             'url' => 'http://entermarket.net/profile?showing=4'
                         ];
+
+                        $details = [
+                            'message' => 'There is a new pending order',
+                            'url' => 'http://admin.entermarket.net/orders/pending'
+                        ];
+                        $admin = Admin::find(1);
+
                         $user->notify(new OrderCreated($detail));
+                        $admin->notify(new NewOrderAlert($details));
                     } else {
                         $order = Order::find($transaction->order_id);
                         $order->payment_status = 'failed';

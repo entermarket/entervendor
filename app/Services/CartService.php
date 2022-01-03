@@ -7,7 +7,7 @@ use App\Models\User;
 
 class CartService
 {
-  public function createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id)
+  public function createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id, $weight)
   {
     $price = floatval($price);
     $quantity = intval($quantity);
@@ -22,13 +22,14 @@ class CartService
       'description' => $description,
       'image' => $image,
       'store_id' => $store_id,
-      'product_id' => $product_id
+      'product_id' => $product_id,
+      'weight'=>$weight
     ];
   }
 
-  public function add($user, $store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id)
+  public function add($user, $store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id, $weight)
   {
-    $cartItems = $this->createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id);
+    $cartItems = $this->createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id, $weight);
 
     $newcart = $user->cart()
       ->where([
@@ -48,6 +49,7 @@ class CartService
       $newcart->store_name = $store_name;
       $newcart->brand_name = $brand_name;
       $newcart->price = $price;
+      $newcart->weight = $weight;
       $newcart->quantity =  $newcart->quantity + $quantity;
       $newcart->save();
 
@@ -75,7 +77,9 @@ class CartService
       'cart' => $mappedcart,
       'total' => $total,
       'commission' => $commission,
-      'shipping' => $shipping
+      'shipping' => $shipping,
+      'weight' => $this->totalweight($user)
+
 
     ];
   }
@@ -175,8 +179,23 @@ class CartService
 
       'total' => $total,
       'commission' => $commission,
-      'shipping' => $shipping
+      'shipping' => $shipping,
+      'weight' => $this->totalweight($user)
 
     ];
+  }
+  public function totalweight($user)
+  {
+    $cart = $user->cart()->get();
+
+    $mappedcart = $cart->map(function ($a) {
+      $a->totalWeight = $a->quantity * $a->weight;
+      return $a;
+    });
+    $total =  $mappedcart->reduce(function ($total, $item) {
+      return $total += $item->totalWeight;
+    });
+
+    return $total;
   }
 }

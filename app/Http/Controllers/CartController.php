@@ -45,9 +45,10 @@ class CartController extends Controller
             $product->sales_price? $product->sales_price:$product->price,
             $quantity,
             $product->product_desc,
-            $product->image[0],
+            $product->image,
             $store->id,
             $product->id,
+            intval($product->weight),
         );
     }
 
