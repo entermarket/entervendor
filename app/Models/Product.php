@@ -36,6 +36,9 @@ function save(array $options = array()) {
    if (empty($this->product_no)) {
       $this->product_no = rand(0000000,999999);
    }
+        if (empty($this->sales_price)) {
+            $this->sales_price = 0;
+        }
    return parent::save($options);
 }
 

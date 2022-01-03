@@ -15,17 +15,17 @@ class ProductController extends Controller
 
     public function index()
     {
-        return Product::with('store', 'category', 'brand')->get();
+        return Product::with('store', 'category', 'brand')->latest()->get();
     }
 
     public function storeproducts(Request $request)
     {
-        return Product::with('store', 'category', 'brand')->where('store_id', $request->store_id)->where('category_id', $request->category_id)->get();
+        return Product::with('store', 'category', 'brand')->where('store_id', $request->store_id)->where('category_id', $request->category_id)->latest()->get();
     }
 
     public function allstoreproducts(Request $request)
     {
-        $product = Product::with('store', 'category', 'brand')->where('store_id', $request->store_id)->where('active', 1)->get();
+        $product = Product::with('store', 'category', 'brand')->where('store_id', $request->store_id)->where('active', 1)->latest()->get();
         return ProductResource::collection($product->values()->paginate(30));
     }
 
@@ -95,7 +95,7 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         $similar = Product::with('store', 'category', 'brand')->where(strtolower('product_name'), 'like', '%' . strtolower($product->product_name) . '%')
-            ->where('id',  '!=', $id)->get();
+            ->where('id',  '!=', $id)->latest()->get();
         return $similar;
     }
 

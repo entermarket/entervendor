@@ -20,10 +20,11 @@ class BrandController extends Controller
     {
 
         $store = auth('store_api')->user();
-        return $store->brands()->create([
+        $brand = $store->brands()->create([
             'name' => $request->name,
             'category_id' => intval($request->id)
         ]);
+        return $brand->load('category');
     }
     public function update( Request $request, Brand $brand)
     {
