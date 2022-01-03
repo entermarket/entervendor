@@ -45,7 +45,7 @@ class StoreController extends Controller
             'image'=> 'required'
 
         ]);
-
+       $request->password = Hash::make($request->password);
         return $this->storeservice->createstore($request);
     }
 
