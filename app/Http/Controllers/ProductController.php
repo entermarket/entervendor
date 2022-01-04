@@ -15,7 +15,13 @@ class ProductController extends Controller
 
     public function index()
     {
-        return Product::with('store', 'category', 'brand')->latest()->get();
+        $product = Product::with('store', 'category', 'brand')->latest()->paginate(30);
+        return ProductResource::collection($product);
+    }
+    public function getallproducts()
+    {
+        $product = Product::with('store', 'category', 'brand')->latest()->paginate(30);
+        return ProductResource::collection($product);
     }
 
     public function storeproducts(Request $request)

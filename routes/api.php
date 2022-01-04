@@ -51,6 +51,15 @@ Route::middleware('auth:admin_api')->group(function () {
     Route::put('admin/update/order/status/{order}', [OrderController::class, 'assignlogistic']);
     Route::get('queryorder/{order}', [OrderController::class, 'queryorder']);
 
+
+    //Admin Notification
+    Route::get('admin/notifications', [NotificationController::class, 'admingetnotifications']);
+    Route::get('admin/notifications/unread', [NotificationController::class, 'adminunreadnotifications']);
+    Route::get('admin/notifications/mark', [NotificationController::class, 'adminmarkreadnotifications']);
+    Route::get('admin/notifications/{id}/mark', [NotificationController::class, 'adminmarksinglenotification']);
+    Route::delete('admin/notifications/delete', [NotificationController::class, 'admindestroy']);
+
+
 });
 
 
@@ -80,6 +89,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('user/notifications/mark', [NotificationController::class, 'markreadnotifications']);
     Route::get('user/notifications/{id}/mark', [NotificationController::class, 'marksinglenotification']);
     Route::delete('user/notifications/delete', [NotificationController::class, 'destroy']);
+
+
 
 
 
@@ -176,6 +187,8 @@ Route::middleware('auth:admin')->get('/admin', function (Request $request) {
     return $request->user();
 });
 Route::middleware(['auth:admin'])->group(function () {
+
+
 });
 
 

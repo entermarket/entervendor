@@ -56,7 +56,7 @@ class NewOrderAlert extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'body'=>$this->details['message']
+            'message'=>$this->details['message']
         ];
     }
 }

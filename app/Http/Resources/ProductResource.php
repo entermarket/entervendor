@@ -22,9 +22,14 @@ class ProductResource extends JsonResource
             'price' => $this->price,
             'sales_price' => $this->sales_price,
             'category_id' => $this->category_id,
-            'image'=> $this->image,
-            'store'=>$this->store,
-            'brand' => $this->brand
+            'image' => $this->image,
+            'store' => $this->store,
+            'brand' => $this->brand,
+            "manufacture_date" => $this->manufacture_date,
+            "expiry_date" => $this->expiry_date,
+            "product_no" => $this->product_no,
+            "batch_no" => $this->batch_no,
+            "in_stock" => $this->in_stock,
         ];
     }
 }

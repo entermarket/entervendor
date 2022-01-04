@@ -14,11 +14,13 @@ class NotificationController extends Controller
 {
 
   public $user;
+  public $admin;
 
   public function __construct()
   {
 
     $this->user = auth('api')->user();
+    $this->admin = auth('admin_api')->user();
   }
 
   public function getnotifications()
@@ -50,6 +52,38 @@ class NotificationController extends Controller
   public function destroy()
   {
     $this->user->notifications()->delete();
+    return response()->json('cleared');
+  }
+
+  public function admingetnotifications()
+  {
+
+    return $this->admin->notifications;
+  }
+  public function adminunreadnotifications()
+  {
+
+    return $this->admin->unreadnotifications;
+  }
+
+  public function adminmarkreadnotifications()
+  {
+
+    $this->admin->unreadNotifications->markAsRead();
+    return  $this->admin->notifications;
+  }
+
+  public function adminmarksinglenotification($id)
+  {
+
+    $this->admin->unreadNotifications->where('id', $id)->markAsRead();
+    return $this->admin->notifications;
+  }
+
+
+  public function admindestroy()
+  {
+    $this->admin->notifications()->delete();
     return response()->json('cleared');
   }
 }

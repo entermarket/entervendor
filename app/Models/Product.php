@@ -29,7 +29,8 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'image' => 'array'
+        'image' => 'array',
+        'active'=>'boolean'
     ];
 
 function save(array $options = array()) {

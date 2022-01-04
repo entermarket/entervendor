@@ -125,8 +125,8 @@ class UserController extends Controller
             $accessToken = auth()->user()->createToken('authToken')->accessToken;
             $responseMessage = "login successful";
             $data = [
-                'email' => 'entermarket@payviame.com',
-                'password' => 'almond.2',
+                'email' => 'entermarket2021@gmail.com',
+                'password' => 'entermarket_2021',
             ];
 
             $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
@@ -167,8 +167,8 @@ class UserController extends Controller
     public function getpayviametoken()
     {
         $data = [
-            'email' => 'entermarket@payviame.com',
-            'password' => 'almond.2',
+            'email' => 'entermarket2021@gmail.com',
+            'password' => 'entermarket_2021',
         ];
 
         $response =  Http::post('https://api.payviame.com/api/auth/login', $data);

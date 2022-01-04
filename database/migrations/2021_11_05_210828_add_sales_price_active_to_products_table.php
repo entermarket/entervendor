@@ -15,7 +15,7 @@ class AddSalesPriceActiveToProductsTable extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->string('sales_price')->default(0);
-            $table->boolean('active')->default(0);
+            $table->boolean('active')->default(false);
         });
     }
 
