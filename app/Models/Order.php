@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class Order extends Model
 {
@@ -51,4 +52,9 @@ class Order extends Model
     {
         return $this->hasOne(OrderInformation::class);
     }
+
+    protected $casts = [
+        'isScheduled'=> 'boolean'
+    ];
+
 }

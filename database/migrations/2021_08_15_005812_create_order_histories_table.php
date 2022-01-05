@@ -22,7 +22,7 @@ class CreateOrderHistoriesTable extends Migration
             $table->string('brand_name')->nullable();
             $table->string('product_name');
             $table->string('store_name');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete()->cascadeOnUpdate();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Admin;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\StoreOrder;
@@ -11,9 +12,9 @@ use Illuminate\Http\Request;
 use App\Services\CartService;
 use Illuminate\Support\Facades\DB;
 use App\Notifications\OrderCreated;
+use App\Notifications\NewOrderAlert;
 use Illuminate\Support\Facades\Http;
 use App\Events\TransactionSuccessful;
-use App\Notifications\NewOrderAlert;
 
 class BankDetailController extends Controller
 {
@@ -146,6 +147,14 @@ class BankDetailController extends Controller
                 $transaction = Transaction::where('reference', $reference)->first();
                 $payment = Payment::where('reference', $reference)->first();
                 if ($transaction) {
+                    if(strtolower($transaction->message) === 'verification successful'){
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Verification successful',
+                            'data' => $transaction->load('order'),
+                            'type' => 'order'
+                        ]);
+                    }
                     $transaction->message = $response->json()['message'];
                     $transaction->status = $response->json()['status'];
                     $transaction->save();
@@ -160,7 +169,7 @@ class BankDetailController extends Controller
                         $user = User::find($order->user_id);
                         $cartservice->clearcart($user);
                         $detail = [
-                            'message' => 'Your order has been created',
+                            'message' => 'Your order has been created and is being processed',
                             'url' => 'http://entermarket.net/profile?showing=4'
                         ];
 
