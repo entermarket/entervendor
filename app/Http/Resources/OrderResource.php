@@ -39,7 +39,8 @@ class OrderResource extends JsonResource
             'orderhistories' => $this->orderhistories,
             'orderinfo' => $this->orderinfo,
             'logistic'=> $this->logistic,
-            'logistic_status' => $this->logistic_status
+            'logistic_status' => $this->logistic_status,
+            'view_at' => $this->view_at
 
         ];
     }

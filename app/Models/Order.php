@@ -29,7 +29,7 @@ class Order extends Model
         'shipping_method',
         'user_id',
         'items',
-        'title', 'isScheduled', 'schedule_time'
+        'title', 'isScheduled', 'schedule_time','view_at'
     ];
 
     public function reports()

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Services\OrderService;
 use Illuminate\Http\Request;
+use App\Services\OrderService;
+use Illuminate\Support\Carbon;
+use App\Http\Resources\OrderResource;
 
 class OrderController extends Controller
 {
@@ -107,6 +108,11 @@ class OrderController extends Controller
     public function updateorderstatus(Request $request, Order $order)
     {
         $order->status = $request->status;
+        if ($request->status === 'delivered') {
+            $order->status = 'delivered';
+        }
+
+
         $order->save();
         return $order->load('orderhistories', 'orderinfo');
     }
@@ -121,6 +127,12 @@ class OrderController extends Controller
         }
         if ($request->has('logistic_status') && $request->filled('logistic_status')) {
             $order->logistic_status = $request->logistic_status;
+        }
+        if ($request->logistic_status === 'delivered') {
+            $order->status = 'delivered';
+        }
+        if ($request->has('view_at') && $request->filled('view_at')) {
+            $order->view_at = Carbon::now();
         }
 
         $order->save();
