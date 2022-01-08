@@ -73,14 +73,14 @@ class CartService
 
     $commission = 0;
     $shipping = 0;
+     $fulfilment = $commission + $shipping;
     return [
       'cart' => $mappedcart,
       'total' => $total,
       'commission' => $commission,
       'shipping' => $shipping,
+      'fulfilment' => $fulfilment,
       'weight' => $this->totalweight($user)
-
-
     ];
   }
   public function update($action, $cart)
@@ -175,11 +175,13 @@ class CartService
 
     $commission = 0;
     $shipping = 0;
+    $fulfilment = $commission + $shipping;
     return [
-
+      'cart' => $mappedcart,
       'total' => $total,
       'commission' => $commission,
       'shipping' => $shipping,
+      'fulfilment' => $fulfilment,
       'weight' => $this->totalweight($user)
 
     ];
