@@ -129,7 +129,7 @@ class UserController extends Controller
                 'password' => 'entermarket_2021',
             ];
 
-            $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
+            $response =  Http::post('https://apis.payviame.com/api/auth/login', $data);
             $payviame_token = $response->json()['access_token'];
 
 

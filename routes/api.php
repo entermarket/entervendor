@@ -59,9 +59,10 @@ Route::middleware('auth:admin_api')->group(function () {
     Route::get('admin/notifications/{id}/mark', [NotificationController::class, 'adminmarksinglenotification']);
     Route::delete('admin/notifications/delete', [NotificationController::class, 'admindestroy']);
 
-
 });
 
+    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('brands', BrandController::class);
 
 
 Route::middleware(['auth:api'])->group(function () {
@@ -127,11 +128,6 @@ Route::middleware('auth:store_api')->apiResource('storeorders', StoreOrderContro
 
 Route::apiResource('stores', StoreController::class);
 
-// categories
-Route::apiResource('categories', CategoryController::class);
-
-// brands
-Route::apiResource('brands', BrandController::class);
 
 // Products
 

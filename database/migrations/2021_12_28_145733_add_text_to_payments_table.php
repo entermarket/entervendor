@@ -14,7 +14,7 @@ class AddTextToPaymentsTable extends Migration
     public function up()
     {
         Schema::table('payments', function (Blueprint $table) {
-            //
+            $table->string('text');
         });
     }
 
@@ -26,7 +26,7 @@ class AddTextToPaymentsTable extends Migration
     public function down()
     {
         Schema::table('payments', function (Blueprint $table) {
-            //
+            $table->dropColumn('text');
         });
     }
 }
