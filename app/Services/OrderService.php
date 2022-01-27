@@ -41,7 +41,10 @@ class OrderService
     $title,
     $isScheduled,
     $schedule_time,
-    $delivery_method
+    $delivery_method,
+    $contact,
+    $contact_email
+
 
   ) {
 
@@ -64,7 +67,9 @@ class OrderService
       $title,
       $isScheduled,
       $schedule_time,
-      $delivery_method
+      $delivery_method,
+      $contact,
+      $contact_email
     ) {
       $cartservice = new CartService;
       $usercart =  $cartservice->getCart($user)['cart'];
@@ -125,6 +130,8 @@ class OrderService
       $user->storeorder()->createMany($mappedarray);
       $this->reducequantity($usercart);
       //update order information
+
+
       $order->orderinfo()->create([
         'user_id' => $user->id,
         'firstName' => $user->firstName,
@@ -142,10 +149,18 @@ class OrderService
       ]);
 
       //update user profile here
-      $user->address = $shipping_address;
-      $user->city = $city;
-      $user->state =  $state;
-      $user->phoneNumber =  $phoneNumber;
+    
+      $address = $user->address;
+
+      array_push($address, [
+        'address' => $shipping_address,
+        'city' => $city,
+        'state' => $state,
+        'phoneNumber' => $phoneNumber,
+        'contact' => $contact,
+        'contact_email'=> $contact_email
+      ]);
+      $user->address =  $address;
       $user->save();
 
 

@@ -46,6 +46,8 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+
+       
         $name = $request->input('name') ? $request->input('name') : 'Order-' . rand(0000, 9999);
 
         return $this->orderService->create(
@@ -67,6 +69,8 @@ class OrderController extends Controller
             $request->isScheduled,
             $request->schedule_time,
             $request->deliverymethod,
+            $request->contact,
+            $request->contact_email,
         );
     }
 

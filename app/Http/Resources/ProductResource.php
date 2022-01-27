@@ -30,6 +30,7 @@ class ProductResource extends JsonResource
             "product_no" => $this->product_no,
             "batch_no" => $this->batch_no,
             "in_stock" => $this->in_stock,
+            "weight" => $this->weight,
         ];
     }
 }

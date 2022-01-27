@@ -52,12 +52,16 @@ class UserController extends Controller
                     'error' => $validator->messages()->toArray()
                 ], 422);
             }
+            $address = [];
+            if ($request->has('address') && $request->filled('address')) {
+                array_push($address, $request->address);
+            }
 
             $user = User::create([
                 'firstName' => $request->firstName,
                 'lastName' => $request->lastName,
                 'email' => $request->email,
-                'address' => $request->address,
+                'address' => $address,
                 'dob' => $request->dob,
                 'gender' => $request->gender,
                 'city' => $request->city,
@@ -68,7 +72,9 @@ class UserController extends Controller
                 'password' => Hash::make($request->password)
 
             ]);
-
+            if ($request->has('cart') && $request->filled('cart')) {
+                $this->addtocart($request->cart, $user);
+            }
 
             $detail = [
                 'message' => 'Welcome to my hood',
@@ -97,6 +103,7 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|string',
             'password' => 'required|min:6',
@@ -128,6 +135,9 @@ class UserController extends Controller
                 'email' => 'entermarket2021@gmail.com',
                 'password' => 'entermarket_2021',
             ];
+            if ($request->has('cart') && $request->filled('cart')) {
+                $this->addtocart($request->cart, $user);
+            }
 
             $response =  Http::post('https://apis.payviame.com/api/auth/login', $data);
             $payviame_token = $response->json()['access_token'];
@@ -144,6 +154,26 @@ class UserController extends Controller
         }
     }
 
+    public function addtocart($carts, $user)
+    {
+
+        $user->cart()->delete();
+        foreach ($carts as $value) {
+            $user->cart()->create([
+                'store_name' => $value['store']['name'],
+                'product_name' => $value['product_name'],
+                'brand_name' => $value['store']['name'],
+                'price' => $value['price'],
+                'quantity' => $value['quantity'],
+                'description' => $value['product_desc'],
+                'image' => $value['image'],
+                'store_id' => $value['store']['id'],
+                'product_id' => $value['id'],
+                'weight' => $value['weight']
+            ]);
+        }
+    }
+
     public function getcoordinates(Request $request)
     {
 
@@ -155,7 +185,7 @@ class UserController extends Controller
         $lat = $response['lat'];
         $long = $response['lng'];
         $formatted_address = $response['formatted_address'];
-       $place = $response['address_components'][2]->long_name;
+        $place = $response['address_components'][2]->long_name;
 
 
         return [
