@@ -136,7 +136,9 @@ class UserController extends Controller
                 'password' => 'entermarket_2021',
             ];
             if ($request->has('cart') && $request->filled('cart')) {
-                $this->addtocart($request->cart, $user);
+                if (count($request->cart)) {
+                    $this->addtocart($request->cart, $user);
+                }
             }
 
             $response =  Http::post('https://apis.payviame.com/api/auth/login', $data);
@@ -160,15 +162,15 @@ class UserController extends Controller
         $user->cart()->delete();
         foreach ($carts as $value) {
             $user->cart()->create([
-                'store_name' => $value['store']['name'],
+                'store_name' => $value['store_name'],
                 'product_name' => $value['product_name'],
-                'brand_name' => $value['store']['name'],
+                'brand_name' => $value['store_name'],
                 'price' => $value['price'],
                 'quantity' => $value['quantity'],
-                'description' => $value['product_desc'],
+                'description' => $value['description'],
                 'image' => $value['image'],
-                'store_id' => $value['store']['id'],
-                'product_id' => $value['id'],
+                'store_id' => $value['store_id'],
+                'product_id' => $value['product_id'],
                 'weight' => $value['weight']
             ]);
         }
