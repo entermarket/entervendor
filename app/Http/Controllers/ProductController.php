@@ -101,8 +101,8 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         $similar = Product::with('store', 'category', 'brand')->where(strtolower('product_name'), 'like', '%' . strtolower($product->product_name) . '%')
-            ->where('id',  '!=', $id)->orWhere('brand_id', $product->brand_id)->orWhere('category_id', $product->category_id)->latest()->get();
-        return $similar;
+            ->orWhere('brand_id', $product->brand_id)->orWhere('category_id', $product->category_id)->inRandomOrder()->get();
+         return $similar->filter(function ($a) use($id){return $a['id'] != $id;})->values()->all();
     }
 
     public function destroy(Product $product)
