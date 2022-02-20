@@ -101,7 +101,7 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         $similar = Product::with('store', 'category', 'brand')->where(strtolower('product_name'), 'like', '%' . strtolower($product->product_name) . '%')
-            ->where('id',  '!=', $id)->latest()->get();
+            ->where('id',  '!=', $id)->orWhere('brand_id', $product->brand_id)->orWhere('category_id', $product->category_id)->latest()->get();
         return $similar;
     }
 

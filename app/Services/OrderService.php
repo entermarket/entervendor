@@ -15,6 +15,7 @@ class OrderService
 
   public function generateUniqueCode()
   {
+    $code= null;
     do {
       $code = random_int(10000000, 99999999);
     } while (Order::where("order_no", "=", $code)->first());
@@ -149,7 +150,7 @@ class OrderService
       ]);
 
       //update user profile here
-    
+
       $address = $user->address;
 
       array_push($address, [
