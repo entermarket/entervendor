@@ -447,7 +447,7 @@ class BankDetailController extends Controller
         $response =  Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
-        ])->post('https://api.payviame.com/api/auth/refresh');
+        ])->post('https://apis.payviame.com/api/auth/refresh');
         return  $responsedata = $response->json()['access_token'];
     }
 
@@ -505,7 +505,6 @@ class BankDetailController extends Controller
         return DB::transaction(function () use ($request) {
             $payment = $this->user->payments()->create([
                 'type' => $request->type,
-                'text' => $request->type.' payment',
                 'amount' => $request->amount,
                 'service' => $request->service,
                 'network' => $request->network,
