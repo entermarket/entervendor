@@ -118,6 +118,7 @@ Route::middleware(['auth:api'])->group(function () {
 Route::get('store/categories/{store}', [StoreController::class, 'getstorecategories']);
 Route::post('store/login', [StoreController::class, 'login']);
 Route::post('get/stores', [StoreController::class, 'getallstores']);
+Route::post('search/stores', [StoreController::class, 'searchstores']);
 Route::middleware('auth:store_api')->post('store/update', [StoreController::class, 'update']);
 Route::middleware('auth:store_api')->get('store/report', [StoreOrderController::class, 'gettotals']);
 Route::middleware('auth:store_api')->get('store/earnings', [StoreOrderController::class, 'getearnings']);
@@ -134,6 +135,7 @@ Route::apiResource('stores', StoreController::class);
 Route::post('store/products', [ProductController::class, 'storeproducts']);
 Route::post('bulk/upload', [ProductController::class, 'bulkupload']);
 Route::post('store/products/all', [ProductController::class, 'allstoreproducts']);
+Route::post('search/products', [ProductController::class, 'searchproducts']);
 Route::get('similar/products/{id}', [ProductController::class, 'getsimilarproducts']);
 Route::middleware('auth:store_api')->post('product/add', [ProductController::class, 'store']);
 Route::apiResource('products', ProductController::class);

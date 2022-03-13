@@ -39,9 +39,11 @@ class UserController extends Controller
 
             $validator = Validator::make($request->all(), [
 
-                'email' => 'bail|required|unique:users',
-                'password' => 'required|min:6',
-                'phoneNumber' => 'bail|required|unique:users|min:11'
+                'firstName' => 'required| alpha_num',
+                'lastName' => 'required| alpha_num',
+                'email' => 'bail|required|unique:users|email:rfc,dns',
+                'password' => 'required|min:6|alpha_dash',
+                'phoneNumber' => 'bail|required|unique:users|min:11|numeric'
             ]);
 
 
@@ -56,7 +58,7 @@ class UserController extends Controller
             if ($request->has('address') && $request->filled('address')) {
                 array_push($address, $request->address);
             }
-
+            return;
             $user = User::create([
                 'firstName' => $request->firstName,
                 'lastName' => $request->lastName,
@@ -105,8 +107,8 @@ class UserController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
-            'password' => 'required|min:6',
+            'email' => 'bail|required|email:rfc,dns',
+            'password' => 'required|min:6|alpha_dash',
         ]);
 
         if ($validator->fails()) {
@@ -203,7 +205,7 @@ class UserController extends Controller
             'password' => 'entermarket_2021',
         ];
 
-        $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
+        $response =  Http::post('https://apis.payviame.com/api/auth/login', $data);
         $payviame_token = $response->json()['access_token'];
         return $payviame_token;
     }
@@ -216,7 +218,8 @@ class UserController extends Controller
     public function postEmail(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+          'email' => 'bail|required|email:rfc,dns',
+
         ]);
 
 
@@ -244,7 +247,7 @@ class UserController extends Controller
 
         $maildata = [
             'title' => 'Password Reset',
-            'url' => 'https://localhost:3000/reset-password/?token=' . $token . '&action=password_reset'
+            'url' => 'https://entermarket.net/reset-password/?token=' . $token . '&action=password_reset'
         ];
 
         Mail::to($credentials['email'])->send(new PasswordResetMail($maildata));
@@ -259,9 +262,8 @@ class UserController extends Controller
 
 
         $request->validate([
-            // 'email' => 'required|email|exists:users',
-            'password' => 'required|string|min:6',
-            'confirmPassword' => 'required',
+            'password' => 'required|min:6|alpha_dash',
+            'confirmPassword' =>  'required',
 
         ]);
 

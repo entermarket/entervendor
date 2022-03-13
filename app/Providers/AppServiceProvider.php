@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Resolvers\SocialUserResolver;
-use Coderello\SocialGrant\Resolvers\SocialUserResolverInterface;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use App\Resolvers\SocialUserResolver;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Coderello\SocialGrant\Resolvers\SocialUserResolverInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,6 +48,15 @@ class AppServiceProvider extends ServiceProvider
                     'pageName' => $pageName,
                 ]
             );
+        });
+
+        Builder::macro('whereLike', function ($attribute, string $TermToSearch) {
+            $this->where(function (Builder $query) use ($attribute, $TermToSearch) {
+                foreach (Arr::wrap($attribute) as $attribute) {
+                    $query->orWhere($attribute, 'LIKE', "%{$TermToSearch}%");
+                }
+            });
+            return $this;
         });
     }
 }

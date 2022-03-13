@@ -43,12 +43,37 @@ class StoreService
       return $a['distance'] ;
     });
 
-    return  StoreResource::collection($result->values()->paginate(30));
+    return  StoreResource::collection($result->values()->paginate(20));
+  }
+
+  public function searchstores($request)
+  {
+    if (is_null($request['query'])) {
+      $stores = Store::latest()->get();
+      $result = $stores->map(function ($a) use ($request) {
+        $a['distance'] = $this->distanceCalculation($request['lat'], $request['long'], $a['lat'], $a['long']);
+        return $a;
+      })->sortBy(function ($a) {
+        return $a['distance'];
+      });
+
+      return  StoreResource::collection($result->values()->paginate(20));
+    }
+
+  $stores = Store::query()->whereLike('name', $request['query'])->get();
+    $result = $stores->map(function ($a) use ($request) {
+      $a['distance'] = $this->distanceCalculation($request['lat'], $request['long'], $a['lat'], $a['long']);
+      return $a;
+    })->sortBy(function ($a) {
+      return $a['distance'];
+    });
+
+    return  StoreResource::collection($result->values()->paginate(20));
   }
   public function showallstores()
   {
 
-   return StoreResource::collection(Store::latest()->paginate(30));
+   return StoreResource::collection(Store::latest()->paginate(20));
   }
   public  function distanceCalculation($point1_lat, $point1_long, $point2_lat, $point2_long, $unit = 'mi', $decimals = 2)
   {

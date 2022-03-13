@@ -40,11 +40,13 @@ class StoreController extends Controller
     {
         $validator = Validator::make($request->all(), [
 
-            'email' => 'bail|required|unique:stores',
-            'password' => 'required|min:6',
+            'email' => 'bail|required|unique:stores|email:rfc,dns',
+            'password' => 'required|min:6|alpha_dash',
             'image'=> 'required'
 
         ]);
+
+
 
         return $this->storeservice->createstore($request);
     }
@@ -78,8 +80,8 @@ class StoreController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
-            'password' => 'required|min:6',
+            'email' => 'bail|required|email:rfc,dns',
+            'password' => 'required|min:6|alpha_dash',
         ]);
 
         if ($validator->fails()) {
@@ -123,7 +125,7 @@ class StoreController extends Controller
             'password' => 'almond.2',
         ];
 
-        $response =  Http::post('https://api.payviame.com/api/auth/login', $data);
+        $response =  Http::post('https://apis.payviame.com/api/auth/login', $data);
         $payviame_token = $response->json()['access_token'];
         return $payviame_token;
     }
@@ -170,5 +172,10 @@ class StoreController extends Controller
         ], 200);
     }
 
+    public function searchstores(Request $request){
+
+        return $this->storeservice->searchstores($request);
+
+    }
 
 }

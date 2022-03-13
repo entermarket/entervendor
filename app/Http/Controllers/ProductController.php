@@ -15,12 +15,12 @@ class ProductController extends Controller
 
     public function index()
     {
-        $product = Product::with('store', 'category', 'brand')->latest()->paginate(30);
+        $product = Product::with('store', 'category', 'brand')->latest()->paginate(20);
         return ProductResource::collection($product);
     }
     public function getallproducts()
     {
-        $product = Product::with('store', 'category', 'brand')->latest()->paginate(30);
+        $product = Product::with('store', 'category', 'brand')->latest()->paginate(20);
         return ProductResource::collection($product);
     }
 
@@ -32,7 +32,15 @@ class ProductController extends Controller
     public function allstoreproducts(Request $request)
     {
         $product = Product::with('store', 'category', 'brand')->where('store_id', $request->store_id)->where('active', 1)->latest()->get();
-        return ProductResource::collection($product->values()->paginate(30));
+        return ProductResource::collection($product->values()->paginate(20));
+    }
+    public function searchproducts(Request $request){
+        if(is_null($request['query'])){
+            $product = Product::with('store', 'category', 'brand')->where('store_id', $request->store_id)->where('active', 1)->latest()->get();
+            return ProductResource::collection($product->values()->paginate(20));
+        }
+        $product = Product::query()->where('store_id', $request->store_id)->where('active', 1)->whereLike('product_name', $request['query'])->with('store', 'category', 'brand')->latest()->get();
+        return ProductResource::collection($product->values()->paginate(20));
     }
 
     public function show(Product $product)
