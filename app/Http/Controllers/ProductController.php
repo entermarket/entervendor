@@ -54,6 +54,7 @@ class ProductController extends Controller
         $store = auth('store_api')->user();
         $data = $request->all();
         $data['image'] = $request->image;
+       
         $data['product_no'] = rand(000000, 999999);
         $product = $store->products()->create($data);
         return $product->load('store', 'category', 'brand');
