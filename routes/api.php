@@ -189,6 +189,15 @@ Route::middleware(['auth:admin'])->group(function () {
 
 });
 
+//Admin
+Route::get('search/order', [OrderController::class, 'searchorder']);
+Route::post('search/order-by-date', [OrderController::class, 'searchbydate']);
+Route::get('search/pending/order', [OrderController::class, 'searchpendingorder']);
+Route::post('search/pending/order-by-date', [OrderController::class, 'searchpendingbydate']);
+Route::get('search/assigned/order', [OrderController::class, 'searchassignedorder']);
+Route::post('search/assigned/order-by-date', [OrderController::class, 'searchassignedbydate']);
+
+
 
 // Social Login routes
 Route::get('/auth/{provider}/redirect', [SocialLoginController::class, 'redirect']);

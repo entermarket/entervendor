@@ -22,7 +22,8 @@ class BrandController extends Controller
 
         $brand = Brand::create([
             'name' => $request->name,
-            'category_id' => intval($request->id)
+            'category_id' => intval($request->id),
+            'store_id' =>1
         ]);
         return $brand->load('category');
     }

@@ -58,7 +58,7 @@ class WishlistController extends Controller
                 $store =  Store::find($item->store_id);
                 $product = Product::find($item->product_id);
                 $storeName = $store->name;
-                $cart->add($this->user, $storeName, $product->product_name, $product->product_name, $product->price, 1, $product->product_desc, $product->image, $item->store_id, $item->product_id);
+                $cart->add($this->user, $storeName, $product->product_name, $product->product_name, $product->price, 1, $product->product_desc, $product->image[0], $item->store_id, $item->product_id, $item->weight);
                 $item->delete();
             }
 

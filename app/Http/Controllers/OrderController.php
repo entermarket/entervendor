@@ -47,7 +47,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
-       
+
         $name = $request->input('name') ? $request->input('name') : 'Order-' . rand(0000, 9999);
 
         return $this->orderService->create(
@@ -158,5 +158,55 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         return $this->orderService->remove($order);
+    }
+
+    public function searchorder(Request $request)
+    {
+        $query = $request->get('query');
+        if(!is_null($query)){
+        return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->with('orderhistories', 'orderinfo')->paginate(20));
+        }
+        return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->where('payment_status', 'paid')->latest()->paginate(20));
+    }
+    public function searchbydate(Request $request)
+    {
+        $start = $request->start;
+        $end = $request->end;
+
+        return
+            OrderResource::collection(Order::whereBetween('created_at', [$start, $end])->with('orderhistories', 'orderinfo')->paginate(20));
+    }
+
+
+    public function searchpendingorder(Request $request)
+    {
+        $query = $request->get('query');
+        if (!is_null($query)) {
+        return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->where('status', 'pending')->with('orderhistories', 'orderinfo')->paginate(20));
+        }
+        return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->where('status', 'pending')->where('payment_status', 'paid')->latest()->paginate(20));
+
+    }
+    public function searchpendingbydate(Request $request)
+    {
+        $start = $request->start;
+        $end = $request->end;
+
+        return   OrderResource::collection(Order::whereBetween('created_at', [$start, $end])->where('status', 'pending')->with('orderhistories', 'orderinfo')->paginate(20));
+    }
+
+    public function searchassignedorder(Request $request)
+    {
+        $query = $request->get('query');
+        if (!is_null($query)) {
+        return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->where('status', 'assigned')->with('orderhistories', 'orderinfo')->paginate(20));
+        }
+        return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->where('status', 'assigned')->where('payment_status', 'paid')->latest()->paginate(20));
+    }
+    public function searchassignedbydate(Request $request)
+    {
+        $start = $request->start;
+        $end = $request->end;
+        return   OrderResource::collection(Order::whereBetween('created_at', [$start, $end])->where('status', 'assigned')->with('orderhistories', 'orderinfo')->paginate(20));
     }
 }
