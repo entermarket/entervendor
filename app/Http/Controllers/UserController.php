@@ -462,6 +462,15 @@ class UserController extends Controller
             ], 401);
         }
 
+        if (Hash::check($request->newpassword, $oldpassword)) {
+            return response()->json([
+                "success" => false,
+                "message" => 'New password cannot be old password'
+
+            ], 401);
+        }
+
+
         $user->password = Hash::make($request->newpassword);
         $user->save();
         return response()->json([
@@ -485,6 +494,14 @@ class UserController extends Controller
             return response()->json([
                 "success" => false,
                 "message" => 'incorrect old pin'
+
+            ], 401);
+        }
+
+        if (Hash::check($request->newpin, $oldpin)) {
+            return response()->json([
+                "success" => false,
+                "message" => 'New pin cannot be old pin'
 
             ], 401);
         }
