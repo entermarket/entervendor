@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Cart;
 use App\Models\User;
+use App\Models\Product;
 
 class CartService
 {
@@ -29,6 +30,8 @@ class CartService
 
   public function add($user, $store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id, $weight)
   {
+    $product = Product::find($product_id);
+    if ($product->in_stock <= 0)  return response(['message' => 'Out of stock'], 400);
     $cartItems = $this->createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id, $weight);
 
     $newcart = $user->cart()
@@ -39,6 +42,7 @@ class CartService
       ])
       ->first();
 
+
     if (is_null($newcart)) {
       $item =  $user->cart()->create($cartItems);
       return response([
@@ -46,6 +50,8 @@ class CartService
         'data' => $item
       ], 201);
     } else {
+      if($product->in_stock < ($newcart->quantity + $quantity)) return response(['message' => 'Out of stock'], 400);
+
       $newcart->store_name = $store_name;
       $newcart->brand_name = $brand_name;
       $newcart->price = $price;
@@ -86,9 +92,11 @@ class CartService
   public function update($action, $cart)
   {
 
-
     try {
       if ($action === 'plus') {
+         $product = Product::find($cart->product_id);
+        if ($product->in_stock <=  $cart->quantity)  return response(['message' => 'Out of stock'],400);
+
         $cart->quantity =  $cart->quantity + 1;
         $cart->save();
       }

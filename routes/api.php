@@ -6,6 +6,7 @@ use App\Http\Controllers\OtpController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StoryController;
@@ -13,14 +14,14 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LgaPriceController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\BankDetailController;
-use App\Http\Controllers\BrandController;
+use App\Http\Controllers\StoreOrderController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderHistoryController;
-use App\Http\Controllers\StoreOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -214,5 +215,7 @@ Route::post('password/reset', [UserController::class, 'changePasswordByOtp']);
 Route::get('get/banks', [BankDetailController::class, 'getbanks']);
 Route::get('get/bank/detail', [BankDetailController::class, 'getbankdetail']);
 Route::apiResource('bank/details', BankDetailController::class);
-
 Route::post('get/coordinates', [UserController::class, 'getcoordinates']);
+
+
+Route::apiResource('lga-prices', LgaPriceController::class);

@@ -55,22 +55,15 @@ class OrderController extends Controller
             $name,
             $request->shipping ? $request->shipping : 0,
             $request->coupon,
-            $request->commission,
             $request->discount ? $request->discount : 0,
-            $request->shippingtype,
-            $request->address,
-            $request->city,
-            $request->state,
+            $request->commission,
+            $request->allAddress,
             $request->pickupPoint,
-            $request->phoneNumber,
             $request->extraInstruction,
             $request->paymentMethod,
             $request->title,
-            $request->isScheduled,
-            $request->schedule_time,
             $request->deliverymethod,
-            $request->contact,
-            $request->contact_email,
+
         );
     }
 
