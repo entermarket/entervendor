@@ -30,7 +30,7 @@ class OrderService
     $name,
     $shipping_charges,
     $promo,
-    $discount,
+    $discount_percent,
     $commission,
     $allAddress,
     $pickup_location,
@@ -47,7 +47,7 @@ class OrderService
       $name,
       $shipping_charges,
       $promo,
-      $discount,
+      $discount_percent,
       $commission,
       $allAddress,
       $pickup_location,
@@ -89,6 +89,7 @@ class OrderService
         return $a + $b;
       });
       $order_no = $this->generateUniqueCode();
+      $discount = $discount_percent * intval($total);
       $grand_total = (intval($total) + intval($deliveryFee)) - $discount;
 
       $items = $usercart->map(function ($a) {

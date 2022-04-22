@@ -10,6 +10,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\ProductController;
@@ -67,6 +68,9 @@ Route::middleware('auth:admin_api')->group(function () {
 
 
 Route::middleware(['auth:api'])->group(function () {
+
+
+    Route::get('get-coupon/{code}', [CouponController::class, 'show']);
 
 
     // Orders
@@ -188,6 +192,10 @@ Route::middleware('auth:admin')->get('/admin', function (Request $request) {
 Route::middleware(['auth:admin'])->group(function () {
 
 
+    Route::get('get-active', [CouponController::class, 'getactive']);
+    Route::get('get-pending', [CouponController::class, 'getpending']);
+    Route::get('get-expired', [CouponController::class, 'getexpired']);
+Route::apiResource('coupons', CouponController::class);
 });
 
 //Admin

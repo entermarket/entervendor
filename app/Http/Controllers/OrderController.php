@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Coupon;
+use App\Models\CouponUser;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\OrderResource;
 
 class OrderController extends Controller
@@ -47,24 +50,51 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
+        return DB::transaction(function () use ($request) {
 
-        $name = $request->input('name') ? $request->input('name') : 'Order-' . rand(0000, 9999);
+            $name = $request->input('name') ? $request->input('name') : 'Order-' . rand(0000, 9999);
 
-        return $this->orderService->create(
-            $this->user,
-            $name,
-            $request->shipping ? $request->shipping : 0,
-            $request->coupon,
-            $request->discount ? $request->discount : 0,
-            $request->commission,
-            $request->allAddress,
-            $request->pickupPoint,
-            $request->extraInstruction,
-            $request->paymentMethod,
-            $request->title,
-            $request->deliverymethod,
+            if ($request->has('coupon') && $request->filled('coupon')) {
+                //check coupon code
+                $coupon = $request->coupon;
+                $usercoupon = Coupon::where('code', $coupon)->where('status', 'active')->where('available', '>', 0)->first();
+                $check  = CouponUser::where('user_id', $this->user->id)->where('coupon_id', $usercoupon->id)->first();
 
-        );
+                if (!is_null($usercoupon && is_null($check))) {
+                    $discount_percent =  ($usercoupon->discount / 100);
+                    $couponuser = new CouponUser();
+                    $couponuser->user_id = $this->user->id;
+                    $couponuser->coupon_id = $usercoupon->id;
+                    $couponuser->save();
+
+
+                    //reduce available coupons
+                    $usercoupon->available = $usercoupon->available - 1;
+                    $usercoupon->save();
+                } else {
+                    $discount_percent = 1;
+                }
+            } else {
+                $discount_percent = 1;
+            }
+
+            return $this->orderService->create(
+                $this->user,
+                $name,
+                $request->shipping ? $request->shipping : 0,
+                $request->coupon,
+                $discount_percent,
+                $request->commission,
+                $request->allAddress,
+                $request->pickupPoint,
+                $request->extraInstruction,
+                $request->paymentMethod,
+                $request->title,
+                $request->deliverymethod,
+                $request->coupon ? $request->coupon : null,
+
+            );
+        });
     }
 
     /**
@@ -156,8 +186,8 @@ class OrderController extends Controller
     public function searchorder(Request $request)
     {
         $query = $request->get('query');
-        if(!is_null($query)){
-        return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->with('orderhistories', 'orderinfo')->paginate(20));
+        if (!is_null($query)) {
+            return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->with('orderhistories', 'orderinfo')->paginate(20));
         }
         return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->where('payment_status', 'paid')->latest()->paginate(20));
     }
@@ -175,10 +205,9 @@ class OrderController extends Controller
     {
         $query = $request->get('query');
         if (!is_null($query)) {
-        return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->where('status', 'pending')->with('orderhistories', 'orderinfo')->paginate(20));
+            return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->where('status', 'pending')->with('orderhistories', 'orderinfo')->paginate(20));
         }
         return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->where('status', 'pending')->where('payment_status', 'paid')->latest()->paginate(20));
-
     }
     public function searchpendingbydate(Request $request)
     {
@@ -192,7 +221,7 @@ class OrderController extends Controller
     {
         $query = $request->get('query');
         if (!is_null($query)) {
-        return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->where('status', 'assigned')->with('orderhistories', 'orderinfo')->paginate(20));
+            return  OrderResource::collection(Order::whereLike('order_no', $query)->orWhere('name', 'LIKE', "%{$query}%")->orWhere('weight', $query)->where('status', 'assigned')->with('orderhistories', 'orderinfo')->paginate(20));
         }
         return OrderResource::collection(Order::with('orderhistories', 'orderinfo')->where('status', 'assigned')->where('payment_status', 'paid')->latest()->paginate(20));
     }
