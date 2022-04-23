@@ -38,11 +38,13 @@ class StoreController extends Controller
 
     public function store(Request $request)
     {
+      
         $validator = Validator::make($request->all(), [
 
             'email' => 'bail|required|unique:stores|email:rfc,dns',
             'password' => 'required|min:6|alpha_dash',
-            'image'=> 'required'
+            'image'=> 'required',
+            'lga_id' => 'required'
 
         ]);
 

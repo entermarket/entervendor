@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Lga;
 use App\Models\LgaPrice;
 use Illuminate\Database\Seeder;
 
@@ -15,6 +16,13 @@ class LgaSeed extends Seeder
     public function run()
     {
         $lgas = [
+            [
+
+                "name" => "Agege"
+            ],
+            [
+                "name" => "Agboyi/Ketu"
+            ],
             [
                 "name" => "Ajeromi-Ifelodun",
                 "id" => 1
@@ -91,22 +99,30 @@ class LgaSeed extends Seeder
                 "name" => "Surulere",
                 "id" => 19
             ],
-            [
 
-                "name" => "Agege"
-            ],
-            [
-                "name" => "Agboyi/Ketu"
-            ]
         ];
 
         foreach ($lgas as $lga) {
-            $lgaprice = new LgaPrice();
-            $lgaprice->lga = $lga['name'];
-            $lgaprice->standard_fee = 1000;
-            $lgaprice->express_fee = 1500;
-            $lgaprice->scheduled_fee =1200;
-            $lgaprice->save();
+            $alllga = new Lga();
+            $alllga->lga = $lga['name'];
+            $alllga->save();
+        }
+
+        $alllgas = Lga::all();
+
+        foreach ($alllgas as $lga) {
+            foreach ($alllgas as $lga1) {
+
+                $lgaprice = new LgaPrice();
+                $lgaprice->lga = $lga['lga'];
+                $lgaprice->lga_id = $lga['id'];
+                $lgaprice->to = $lga1['lga'];
+                $lgaprice->to_id = $lga1['id'];
+                $lgaprice->standard_fee = 1000;
+                $lgaprice->express_fee = 1500;
+                $lgaprice->scheduled_fee = 1200;
+                $lgaprice->save();
+            }
         }
     }
 }

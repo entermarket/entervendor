@@ -75,16 +75,7 @@ class OrderService
       $total = ($cartservice->total($user)['total']) * count($allAddress);
       $weight = $cartservice->total($user)['weight'];
       $deliveryFee = collect($allAddress)->map(function ($a) {
-        $lga =  LgaPrice::find($a['lga']);
-        if ($a['shipping'] === 'standard') {
-          return  $lga->standard_fee;
-        }
-        if ($a['shipping'] === 'express') {
-          return  $lga->express_fee;
-        }
-        if ($a['shipping'] === 'scheduled') {
-          return  $lga->scheduled_fee;
-        }
+        return $a['shipping_fee'];
       })->reduce(function ($a,$b){
         return $a + $b;
       });
@@ -166,6 +157,7 @@ class OrderService
           'lga' => $address['lga'],
           'phoneNumber' => $address['phoneNumber'],
           'contact_name' => $address['contact_name'],
+          'contact_email' => $address['contact_email'],
           'shipping' => $address['shipping'],
 
         ]);

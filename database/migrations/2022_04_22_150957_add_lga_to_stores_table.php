@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLgaPricesTable extends Migration
+class AddLgaToStoresTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,9 @@ class CreateLgaPricesTable extends Migration
      */
     public function up()
     {
-        Schema::create('lga_prices', function (Blueprint $table) {
-            $table->id();
-            $table->string('lga');
-            $table->integer('standard_fee');
-             $table->integer('express_fee');
-            $table->integer('scheduled_fee');
+        Schema::table('stores', function (Blueprint $table) {
+
             $table->foreignId('lga_id');
-            $table->timestamps();
         });
     }
 
@@ -31,6 +26,8 @@ class CreateLgaPricesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lga_prices');
+        Schema::table('stores', function (Blueprint $table) {
+            $table->dropColumn( 'lga_id');
+        });
     }
 }

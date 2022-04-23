@@ -226,4 +226,13 @@ Route::apiResource('bank/details', BankDetailController::class);
 Route::post('get/coordinates', [UserController::class, 'getcoordinates']);
 
 
+Route::get('get-lgas', [LgaPriceController::class, 'index']);
+Route::post('add-lga', [LgaPriceController::class, 'addlga']);
+Route::delete('delete-lga/{lga}', [LgaPriceController::class, 'deletelga']);
+
+
+Route::get('get-lga-prices/{id}', [LgaPriceController::class, 'getlgaprices']);
+
+Route::get('get-lga-price/{id}/{storeId}', [LgaPriceController::class, 'getlgaprice']);
+
 Route::apiResource('lga-prices', LgaPriceController::class);

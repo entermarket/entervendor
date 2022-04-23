@@ -72,10 +72,10 @@ class OrderController extends Controller
                     $usercoupon->available = $usercoupon->available - 1;
                     $usercoupon->save();
                 } else {
-                    $discount_percent = 1;
+                    $discount_percent = 0;
                 }
             } else {
-                $discount_percent = 1;
+                $discount_percent = 0;
             }
 
             return $this->orderService->create(

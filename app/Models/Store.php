@@ -26,10 +26,17 @@ class Store extends Authenticatable
         'password',
         'lat',
         'long',
-        'place'
+        'place',
+
+        'lga_id'
     ];
+    public function lga()
+    {
+        return $this->belongsTo(Lga::class);
+    }
 
     public function products()
+
     {
         return $this->hasMany(Product::class);
     }

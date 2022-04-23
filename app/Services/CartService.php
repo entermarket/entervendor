@@ -30,6 +30,17 @@ class CartService
 
   public function add($user, $store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id, $weight)
   {
+    $cartitems = $user->cart()->get();
+    if(count($cartitems)){
+     $store_cart_id = $user->cart()->first()->store_id;
+     if($store_cart_id !== $store_id){
+        return response([
+          'status' => false,
+          'message' => 'Sorry, you can only shop from one store at a time!'
+        ], 400);
+     }
+
+    }
     $product = Product::find($product_id);
     if ($product->in_stock <= 0)  return response(['message' => 'Out of stock'], 400);
     $cartItems = $this->createCart($store_name, $product_name, $brand_name, $price, $quantity, $description, $image, $store_id, $product_id, $weight);
