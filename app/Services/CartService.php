@@ -36,7 +36,7 @@ class CartService
      if($store_cart_id !== $store_id){
         return response([
           'status' => false,
-          'message' => 'Sorry, you can only shop from one store at a time!'
+          'message' => 'Sorry, you can only shop one store at a time!'
         ], 400);
      }
 

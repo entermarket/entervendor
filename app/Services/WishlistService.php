@@ -25,11 +25,14 @@ class WishlistService
 
     $wishlist = Wishlist::find($request->wishlist_id);
     $product = Product::find($request->product_id);
+    $check =  $wishlist->wishlistitems()->where('product_id' ,$product->id,)->first();
 
-    $wishlist->wishlistitems()->create([
-      'store_id' => $product->store_id,
-      'product_id' => $product->id,
-    ]);
+  if(is_null($check)){
+      $wishlist->wishlistitems()->create([
+        'store_id' => $product->store_id,
+        'product_id' => $product->id,
+      ]);
+  }
     return $user->wishlist()->with('wishlistitems')->get();
   }
 
