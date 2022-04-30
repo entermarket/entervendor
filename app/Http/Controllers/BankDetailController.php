@@ -98,6 +98,7 @@ class BankDetailController extends Controller
             $email = $this->user->email;
             $amount = $request['amount'] * 100;
             $order_id = $request['order_id'];
+            $order_no = Order::find($order_id)->order_no;
 
 
             $body = [
@@ -120,7 +121,7 @@ class BankDetailController extends Controller
                 'status' => 'pending',
                 'trxref' =>  $responsedata['access_code'],
                 'redirecturl' =>  $responsedata['authorization_url'],
-                'order_id' => $order_id,
+                'order_id' => $order_no,
                 'amount' => $amount,
                 'mode' => 'paystack',
                 'type' => 'online'
@@ -160,22 +161,31 @@ class BankDetailController extends Controller
                     $transaction->save();
 
                     if ($response->json()['status'] == 'success') {
-                        $order = Order::find($transaction->order_id);
-                        $order->payment_status = 'paid';
-                        $order->save();
+                        $orders = Order::where('order_no',$transaction->order_id)->get();
+                        $firstorder = $orders[0];
+                        foreach($orders as $order) {
+                            $order->payment_status = 'paid';
+                            $order->save();
+                        }
 
-                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status'=> 'paid']);
+                        $StoreOrders = StoreOrder::where('order_no', $firstorder->order_no)->get();
+                        foreach ($StoreOrders as $StoreOrder) {
+                            $StoreOrder->payment_status = 'paid';
+                            $StoreOrder->save();
+                        }
+
+
                         $cartservice = new CartService;
-                        $user = User::find($order->user_id);
+                        $user = User::find($firstorder->user_id);
                         $cartservice->clearcart($user);
                         $detail = [
-                            'message' => 'Your order has been created and is being processed',
-                            'url' => 'http://entermarket.net/profile?showing=4'
+                            'message' => 'Your order with order number #'. $firstorder->order_no. ' has been created and is being processed',
+                            'url' => 'https://entermarket.net/profile?showing=4'
                         ];
 
                         $details = [
-                            'message' => 'There is a new pending order',
-                            'url' => 'http://admin.entermarket.net/orders/pending'
+                            'message' => 'There is a new pending order with order number #' . $firstorder->order_no,
+                            'url' => 'https://admin12xx.entermarket.net/orders/pending'
                         ];
                         $admin = Admin::find(1);
 

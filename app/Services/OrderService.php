@@ -74,6 +74,7 @@ class OrderService
       }
 
       $total = ($cartservice->total($user)['total']) * count($allAddress);
+      $singleordertotal = $cartservice->total($user)['total'];
       $weight = $cartservice->total($user)['weight'];
       $deliveryFee = collect($allAddress)->map(function ($a) {
         return $a['shipping_fee'];
@@ -90,7 +91,7 @@ class OrderService
         return $a + $b;
       });
 
-      //create order
+      //create orders
       foreach ($allAddress as $address) {
 
         if ($address['shipping'] === 'scheduled') {
@@ -102,11 +103,11 @@ class OrderService
           'order_no' => $order_no,
           'name' => $name,
           'status' => 'pending',
-          'sub_total' => $total,
-          'total_amount' => $total,
+          'sub_total' => $singleordertotal,
+          'total_amount' => $singleordertotal + $address['shipping_fee'],
           'commission' => $commission,
           'tax' => 0,
-          'shipping_charges' => $deliveryFee,
+          'shipping_charges' => $address['shipping_fee'],
           'promo' => $promo,
           'discount' => $discount,
           'grand_total' => $grand_total,
@@ -134,6 +135,7 @@ class OrderService
         //update order information
         $lga = Lga::find($address['lga']);
         $orderinfoAddress = $address['address'] . ', ' . $lga->lga;
+
         $order->orderinfo()->create([
           'user_id' => $user->id,
           'firstName' =>  $address['contact_name'],
@@ -143,8 +145,8 @@ class OrderService
           'shipping_address' => $orderinfoAddress,
           '$pickup_location' => $pickup_location,
           'email' =>  $address['contact_email'],
-          'city' => 'city',
-          'state' => 'state',
+          'city' =>  $lga->lga,
+          'state' => 'lagos',
           'phoneNumber' =>  $address['phoneNumber'],
           'extra_instruction' => $extra_instruction,
           'payment_method' => $payment_method
