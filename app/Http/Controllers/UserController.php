@@ -79,8 +79,8 @@ class UserController extends Controller
             }
 
             $detail = [
-                'message' => 'Welcome to my hood',
-                'url' => 'http://entermarket.com'
+                'message' => 'Welcome to my EnterMarket',
+                'url' => 'http://entermarket.net'
             ];
             $user->notify(new NewUser($detail));
 

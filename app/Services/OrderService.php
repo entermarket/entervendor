@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Lga;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\LgaPrice;
@@ -76,7 +77,7 @@ class OrderService
       $weight = $cartservice->total($user)['weight'];
       $deliveryFee = collect($allAddress)->map(function ($a) {
         return $a['shipping_fee'];
-      })->reduce(function ($a,$b){
+      })->reduce(function ($a, $b) {
         return $a + $b;
       });
       $order_no = $this->generateUniqueCode();
@@ -131,15 +132,17 @@ class OrderService
 
 
         //update order information
+        $lga = Lga::find($address['lga']);
+        $orderinfoAddress = $address['address'] . ', ' . $lga->lga;
         $order->orderinfo()->create([
           'user_id' => $user->id,
-          'firstName' => $user->firstName,
-          'lastName' => $user->lastName,
+          'firstName' =>  $address['contact_name'],
+          'lastName' => $address['contact_name'],
           'delivery_method' => $delivery_method,
           'shipping_method' => $address['shipping'],
-          'shipping_address' => $address['address'],
+          'shipping_address' => $orderinfoAddress,
           '$pickup_location' => $pickup_location,
-          'email' => $user->email,
+          'email' =>  $address['contact_email'],
           'city' => 'city',
           'state' => 'state',
           'phoneNumber' =>  $address['phoneNumber'],
@@ -152,17 +155,23 @@ class OrderService
 
         $addresses = $user->address;
 
-        array_push($addresses, [
-          'address' => $address['address'],
-          'lga' => $address['lga'],
-          'phoneNumber' => $address['phoneNumber'],
-          'contact_name' => $address['contact_name'],
-          'contact_email' => $address['contact_email'],
-          'shipping' => $address['shipping'],
+        $mappedaddress = collect($addresses)->map(function ($a) {
+          return $a['id'];
+        });
 
-        ]);
-        $user->address =  $addresses;
-        $user->save();
+
+        if (!in_array($address['id'], $mappedaddress->toArray())) {
+          array_push($addresses, [
+            'id' => $address['id'],
+            'address' => $address['address'],
+            'lga' => $address['lga'],
+            'phoneNumber' => $address['phoneNumber'],
+            'contact_name' => $address['contact_name'],
+            'contact_email' => $address['contact_email'],
+          ]);
+          $user->address =  $addresses;
+          $user->save();
+        }
       }
 
 
