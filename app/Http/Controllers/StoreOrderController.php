@@ -22,7 +22,7 @@ class StoreOrderController extends Controller
 
     public function index()
     {
-        return auth('store_api')->user()->storeorders()->with('product')->where('payment_status', 'paid')->latest()->get();
+        return auth('store_api')->user()->storeorders()->with('product', 'orderinfo', 'orderhistories', 'myorder')->where('payment_status', 'paid')->latest()->get();
     }
 
     public function gettotals()

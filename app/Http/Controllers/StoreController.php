@@ -6,9 +6,11 @@ use Auth;
 use Mail;
 use Validator;
 use App\Models\Store;
+use App\Models\StoreOrder;
 use Illuminate\Http\Request;
 use App\Services\StoreService;
 use Illuminate\Support\Facades\Http;
+use App\Http\Resources\StoreResource;
 
 class StoreController extends Controller
 {
@@ -23,6 +25,10 @@ class StoreController extends Controller
     public function index()
     {
         return $this->storeservice->showallstores();
+    }
+    public function getstores()
+    {
+        return  StoreResource::collection(Store::get());
     }
 
 
@@ -186,5 +192,23 @@ class StoreController extends Controller
     {
 
         return $this->storeservice->searchstores($request);
+    }
+
+    public function changestatus(Request $request, $id)
+    {
+        $store = Store::find($id);
+        $store->status = $request->active;
+        $store->save();
+
+        return [
+            'status' => true,
+            'data' => $store
+        ];
+    }
+
+    public function markorder($id){
+        $storeorder = StoreOrder::find($id);
+        $storeorder->status = 'completed';
+        $storeorder->save();
     }
 }

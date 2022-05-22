@@ -58,27 +58,80 @@ class OrderController extends Controller
                 //check coupon code
                 $coupon = $request->coupon;
                 $usercoupon = Coupon::where('code', $coupon)->where('status', 'active')->where('available', '>', 0)->first();
-                $check  = CouponUser::where('user_id', $this->user->id)->where('coupon_id', $usercoupon->id)->first();
+                if(!is_null($usercoupon)){
+                    $check  = CouponUser::where('user_id', $this->user->id)->where('coupon_id', $usercoupon->id)->first();
 
-                if (!is_null($usercoupon && is_null($check))) {
-                    $discount_percent =  ($usercoupon->discount / 100);
-                    $couponuser = new CouponUser();
-                    $couponuser->user_id = $this->user->id;
-                    $couponuser->coupon_id = $usercoupon->id;
-                    $couponuser->save();
+                    if (!is_null($usercoupon && is_null($check))) {
+                        $discount_percent =  ($usercoupon->discount / 100);
+                        $couponuser = new CouponUser();
+                        $couponuser->user_id = $this->user->id;
+                        $couponuser->coupon_id = $usercoupon->id;
+                        $couponuser->save();
 
 
-                    //reduce available coupons
-                    $usercoupon->available = $usercoupon->available - 1;
-                    $usercoupon->save();
-                } else {
-                    $discount_percent = 0;
+                        //reduce available coupons
+                        $usercoupon->available = $usercoupon->available - 1;
+                        $usercoupon->save();
+                    } else {
+                        $discount_percent = 0;
+                    }
                 }
             } else {
                 $discount_percent = 0;
             }
 
             return $this->orderService->create(
+                $this->user,
+                $name,
+                $request->shipping ? $request->shipping : 0,
+                $request->coupon,
+                $discount_percent,
+                $request->commission,
+                json_decode($request->allAddress),
+                $request->pickupPoint,
+                $request->extraInstruction,
+                $request->paymentMethod,
+                $request->title,
+                $request->deliverymethod,
+                $request->coupon ? $request->coupon : null,
+
+            );
+        });
+    }
+    public function webstore(Request $request)
+    {
+
+        return DB::transaction(function () use ($request) {
+
+            $name = $request->input('name') ? $request->input('name') : 'Order-' . rand(0000, 9999);
+
+            if ($request->has('coupon') && $request->filled('coupon')) {
+                //check coupon code
+                $coupon = $request->coupon;
+                $usercoupon = Coupon::where('code', $coupon)->where('status', 'active')->where('available', '>', 0)->first();
+                if (!is_null($usercoupon)) {
+                    $check  = CouponUser::where('user_id', $this->user->id)->where('coupon_id', $usercoupon->id)->first();
+
+                    if (!is_null($usercoupon && is_null($check))) {
+                        $discount_percent =  ($usercoupon->discount / 100);
+                        $couponuser = new CouponUser();
+                        $couponuser->user_id = $this->user->id;
+                        $couponuser->coupon_id = $usercoupon->id;
+                        $couponuser->save();
+
+
+                        //reduce available coupons
+                        $usercoupon->available = $usercoupon->available - 1;
+                        $usercoupon->save();
+                    } else {
+                        $discount_percent = 0;
+                    }
+                }
+            } else {
+                $discount_percent = 0;
+            }
+
+            return $this->orderService->createweb(
                 $this->user,
                 $name,
                 $request->shipping ? $request->shipping : 0,
@@ -96,6 +149,7 @@ class OrderController extends Controller
             );
         });
     }
+
 
     /**
      * Display the specified resource.

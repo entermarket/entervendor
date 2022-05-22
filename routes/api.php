@@ -49,7 +49,7 @@ Route::middleware('auth:admin_api')->group(function () {
     Route::get('admin/get/orders', [OrderController::class, 'adminindex']);
     Route::get('admin/get/assigned/orders', [OrderController::class, 'adminordersassigned']);
     Route::get('admin/get/pending/orders', [OrderController::class, 'adminorderspending']);
-   // Route::put('admin/update/order/status/{order}', [OrderController::class, 'updateorderstatus']);
+    // Route::put('admin/update/order/status/{order}', [OrderController::class, 'updateorderstatus']);
     Route::put('admin/update/order/status/{order}', [OrderController::class, 'assignlogistic']);
     Route::get('queryorder/{order}', [OrderController::class, 'queryorder']);
 
@@ -60,11 +60,10 @@ Route::middleware('auth:admin_api')->group(function () {
     Route::get('admin/notifications/mark', [NotificationController::class, 'adminmarkreadnotifications']);
     Route::get('admin/notifications/{id}/mark', [NotificationController::class, 'adminmarksinglenotification']);
     Route::delete('admin/notifications/delete', [NotificationController::class, 'admindestroy']);
-
 });
 
-    Route::apiResource('categories', CategoryController::class);
-    Route::apiResource('brands', BrandController::class);
+Route::apiResource('categories', CategoryController::class);
+Route::apiResource('brands', BrandController::class);
 
 
 Route::middleware(['auth:api'])->group(function () {
@@ -76,6 +75,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Orders
     Route::apiResource('user/order/histories', OrderHistoryController::class);
     Route::apiResource('user/orders', OrderController::class);
+    Route::post('web-user/orders', [OrderController::class, 'webstore']);
 
 
 
@@ -133,7 +133,7 @@ Route::middleware('auth:store_api')->apiResource('storeorders', StoreOrderContro
 
 
 Route::apiResource('stores', StoreController::class);
-
+Route::get('get-stores', [StoreController::class, 'getstores']);
 
 // Products
 
@@ -172,7 +172,7 @@ Route::apiResource('otp', OtpController::class);
 Route::apiResource('users', UserController::class);
 
 Route::post('vendor/register', [VendorController::class, 'register']);
-Route::post('admin/register', [AdminController::class, 'register']);
+// Route::post('admin/register', [AdminController::class, 'register']);
 Route::post('admin/login', [AdminController::class, 'login']);
 
 // Vendor Routes
@@ -195,9 +195,11 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('get-active', [CouponController::class, 'getactive']);
     Route::get('get-pending', [CouponController::class, 'getpending']);
     Route::get('get-expired', [CouponController::class, 'getexpired']);
-Route::apiResource('coupons', CouponController::class);
-});
 
+
+    Route::apiResource('coupons', CouponController::class);
+});
+Route::put('change/store-status/{id}', [StoreController::class, 'changestatus']);
 //Admin
 Route::get('search/order', [OrderController::class, 'searchorder']);
 Route::post('search/order-by-date', [OrderController::class, 'searchbydate']);
@@ -235,3 +237,4 @@ Route::get('get-lga-prices/{id}', [LgaPriceController::class, 'getlgaprices']);
 Route::get('get-lga-price/{id}/{storeId}', [LgaPriceController::class, 'getlgaprice']);
 
 Route::apiResource('lga-prices', LgaPriceController::class);
+Route::get('mark-order-complete/{id}', [StoreController::class, 'markorder']);

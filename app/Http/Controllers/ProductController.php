@@ -54,7 +54,7 @@ class ProductController extends Controller
         $store = auth('store_api')->user();
         $data = $request->all();
         $data['image'] = $request->image;
-       
+
         $data['product_no'] = rand(000000, 999999);
         $product = $store->products()->create($data);
         return $product->load('store', 'category', 'brand');
@@ -99,6 +99,10 @@ class ProductController extends Controller
         }
         if (!empty($request->input('product_no')) && $request->filled('product_no')  && $request->has('product_no')) {
             $product->product_no = $request->product_no;
+        }
+
+         if (!empty($request->input('weight')) && $request->filled('weight')  && $request->has('weight')) {
+            $product->weight = $request->weight;
         }
 
 

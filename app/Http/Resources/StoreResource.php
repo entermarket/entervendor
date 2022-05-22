@@ -20,7 +20,8 @@ class StoreResource extends JsonResource
             'distance' => $this->distance,
             'image' => $this->image,
             'location' => $this->location,
-            'name' => $this->name
+            'name' => $this->name,
+            'status' => $this->status
         ];
     }
 }
