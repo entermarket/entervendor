@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Cart;
 use App\Models\User;
+use App\Models\Store;
 use App\Models\Product;
 
 class CartService
@@ -78,8 +79,15 @@ class CartService
   }
   public function getCart($user)
   {
+    $location = "";
     $cart = $user->cart()->get();
+   if(count($cart)){
+    $loc = Store::find($cart[0]->store_id);
+    if(!is_null($loc)){
+        $location =  $loc->location;
+    }
 
+   }
     $mappedcart = $cart->map(function ($a) {
       $a->subtotal = $a->quantity * $a->price;
       return $a;
@@ -97,7 +105,8 @@ class CartService
       'commission' => $commission,
       'shipping' => $shipping,
       'fulfilment' => $fulfilment,
-      'weight' => $this->totalweight($user)
+      'weight' => $this->totalweight($user),
+      "location" => $location
     ];
   }
   public function update($action, $cart)

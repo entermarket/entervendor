@@ -111,13 +111,12 @@ Route::middleware(['auth:api'])->group(function () {
     // Transactions
     Route::apiResource('user/transactions', TransactionController::class);
     Route::post('transaction/initiate', [BankDetailController::class, 'makepayment']);
-    Route::get('transaction/verify/{reference}', [BankDetailController::class, 'verifytransaction']);
     Route::post('transaction/verify', [BankDetailController::class, 'transactionevent']);
     Route::post('payviame/payment', [BankDetailController::class, 'paybypayviame']);
 
     Route::get('add-wishlist/{wishlist}', [WishlistController::class, 'addlisttocart']);
 });
-
+Route::get('transaction/verify/{reference}', [BankDetailController::class, 'verifytransaction']);
 
 //Store routes
 Route::get('store/categories/{store}', [StoreController::class, 'getstorecategories']);

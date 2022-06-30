@@ -53,7 +53,7 @@ class OrderController extends Controller
         return DB::transaction(function () use ($request) {
 
             $name = $request->input('name') ? $request->input('name') : 'Order-' . rand(0000, 9999);
-
+            $discount_percent = 0;
             if ($request->has('coupon') && $request->filled('coupon')) {
                 //check coupon code
                 $coupon = $request->coupon;
