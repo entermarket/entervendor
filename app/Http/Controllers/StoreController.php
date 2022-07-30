@@ -6,9 +6,11 @@ use Auth;
 use Mail;
 use Validator;
 use App\Models\Store;
+use App\Models\StoreOrder;
 use Illuminate\Http\Request;
 use App\Services\StoreService;
 use Illuminate\Support\Facades\Http;
+use App\Http\Resources\StoreResource;
 
 class StoreController extends Controller
 {
@@ -24,12 +26,16 @@ class StoreController extends Controller
     {
         return $this->storeservice->showallstores();
     }
+    public function getstores()
+    {
+        return  StoreResource::collection(Store::get());
+    }
 
 
     public function storegetproducts()
     {
-        $store= auth('store_api')->user();
-        return $store->products()->with('store','category','brand')->get();
+        $store = auth('store_api')->user();
+        return $store->products()->with('store', 'category', 'brand')->get();
     }
     public function getallstores(Request $request)
     {
@@ -38,11 +44,13 @@ class StoreController extends Controller
 
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
 
             'email' => 'bail|required|unique:stores|email:rfc,dns',
             'password' => 'required|min:6|alpha_dash',
-            'image'=> 'required'
+            'image' => 'required',
+            'lga_id' => 'required'
 
         ]);
 
@@ -56,15 +64,23 @@ class StoreController extends Controller
         return $store;
     }
 
-    public function update(Request $request){
+    public function update(Request $request)
+    {
         $store = auth('store_api')->user();
-       try {
-        $store->name = $request->username;
-        $store->save();
-        return response('update successful');
-       } catch (\Throwable $th) {
-           throw $th;
-       }
+        try {
+            if ($request->has('name') && $request->filled('name')) {
+                $store->name = $request->name;
+            }
+
+            if ($request->has('status') && $request->filled('status')) {
+                $store->status = $request->status;
+            }
+
+            $store->save();
+            return response('update successful');
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
     public function getstorecategories(Store $store)
     {
@@ -104,8 +120,8 @@ class StoreController extends Controller
                 ], 422);
             }
 
-        $user =  Auth::guard('store')->user();
-            $accessToken =$user->createToken('authToken')->accessToken;
+            $user =  Auth::guard('store')->user();
+            $accessToken = $user->createToken('authToken')->accessToken;
             $responseMessage = "login successful";
 
             return $this->respondWithOnlyToken($accessToken, $responseMessage, $user);
@@ -172,10 +188,27 @@ class StoreController extends Controller
         ], 200);
     }
 
-    public function searchstores(Request $request){
+    public function searchstores(Request $request)
+    {
 
         return $this->storeservice->searchstores($request);
-
     }
 
+    public function changestatus(Request $request, $id)
+    {
+        $store = Store::find($id);
+        $store->status = $request->active;
+        $store->save();
+
+        return [
+            'status' => true,
+            'data' => $store
+        ];
+    }
+
+    public function markorder($id){
+        $storeorder = StoreOrder::find($id);
+        $storeorder->status = 'completed';
+        $storeorder->save();
+    }
 }

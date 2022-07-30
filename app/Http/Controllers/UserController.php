@@ -58,7 +58,7 @@ class UserController extends Controller
             if ($request->has('address') && $request->filled('address')) {
                 array_push($address, $request->address);
             }
-            return;
+
             $user = User::create([
                 'firstName' => $request->firstName,
                 'lastName' => $request->lastName,
@@ -79,8 +79,8 @@ class UserController extends Controller
             }
 
             $detail = [
-                'message' => 'Welcome to my hood',
-                'url' => 'http://entermarket.com'
+                'message' => 'Welcome to my EnterMarket',
+                'url' => 'http://entermarket.net'
             ];
             $user->notify(new NewUser($detail));
 
@@ -135,7 +135,7 @@ class UserController extends Controller
             $responseMessage = "login successful";
             $data = [
                 'email' => 'entermarket2021@gmail.com',
-                'password' => 'entermarket_2021',
+                'password' => 'almond.2',
             ];
             if ($request->has('cart') && $request->filled('cart')) {
                 if (count($request->cart)) {
@@ -143,7 +143,12 @@ class UserController extends Controller
                 }
             }
 
-            $response =  Http::post('https://apis.payviame.com/api/auth/login', $data);
+          $response =  Http::post('https://apis.payviame.com/api/auth/login', $data);
+          if($response->json()['status']== 'error') return response()->json([
+                "success" => false,
+                "message" => 'token error',
+
+            ], 422);
             $payviame_token = $response->json()['access_token'];
 
 
@@ -202,7 +207,7 @@ class UserController extends Controller
     {
         $data = [
             'email' => 'entermarket2021@gmail.com',
-            'password' => 'entermarket_2021',
+            'password' => 'almond.2',
         ];
 
         $response =  Http::post('https://apis.payviame.com/api/auth/login', $data);
@@ -457,6 +462,15 @@ class UserController extends Controller
             ], 401);
         }
 
+        if (Hash::check($request->newpassword, $oldpassword)) {
+            return response()->json([
+                "success" => false,
+                "message" => 'New password cannot be old password'
+
+            ], 401);
+        }
+
+
         $user->password = Hash::make($request->newpassword);
         $user->save();
         return response()->json([
@@ -480,6 +494,14 @@ class UserController extends Controller
             return response()->json([
                 "success" => false,
                 "message" => 'incorrect old pin'
+
+            ], 401);
+        }
+
+        if (Hash::check($request->newpin, $oldpin)) {
+            return response()->json([
+                "success" => false,
+                "message" => 'New pin cannot be old pin'
 
             ], 401);
         }

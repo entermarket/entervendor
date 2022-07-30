@@ -42,6 +42,8 @@ class NotificationController extends Controller
   }
 
   public function marksinglenotification($id)
+
+
   {
 
     $this->user->unreadNotifications->where('id', $id)->markAsRead();

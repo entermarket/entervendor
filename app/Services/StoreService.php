@@ -35,7 +35,7 @@ class StoreService
   {
 
 
-    $stores = Store::latest()->get();
+    $stores = Store::where('status', 1)->latest()->get();
     $result = $stores->map(function ($a) use ($request) {
       $a['distance'] = $this->distanceCalculation($request['lat'], $request['long'], $a['lat'], $a['long']);
       return $a;
@@ -49,7 +49,7 @@ class StoreService
   public function searchstores($request)
   {
     if (is_null($request['query'])) {
-      $stores = Store::latest()->get();
+      $stores = Store::where('status', 1)->latest()->get();
       $result = $stores->map(function ($a) use ($request) {
         $a['distance'] = $this->distanceCalculation($request['lat'], $request['long'], $a['lat'], $a['long']);
         return $a;
@@ -60,7 +60,7 @@ class StoreService
       return  StoreResource::collection($result->values()->paginate(20));
     }
 
-  $stores = Store::query()->whereLike('name', $request['query'])->get();
+  $stores = Store::query()->where('status', 1)->whereLike('name', $request['query'])->get();
     $result = $stores->map(function ($a) use ($request) {
       $a['distance'] = $this->distanceCalculation($request['lat'], $request['long'], $a['lat'], $a['long']);
       return $a;

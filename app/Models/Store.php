@@ -26,10 +26,17 @@ class Store extends Authenticatable
         'password',
         'lat',
         'long',
-        'place'
+        'place',
+        'status',
+        'lga_id'
     ];
+    public function lga()
+    {
+        return $this->belongsTo(Lga::class);
+    }
 
     public function products()
+
     {
         return $this->hasMany(Product::class);
     }
@@ -42,7 +49,8 @@ class Store extends Authenticatable
         return $this->hasMany(Brand::class);
     }
 
-    public function storeorders(){
+    public function storeorders()
+    {
         return $this->hasMany(StoreOrder::class);
     }
 
@@ -56,7 +64,7 @@ class Store extends Authenticatable
         'password'
     ];
     protected $attributes = [
-        "connection" =>'null',
+        "connection" => 'null',
         "api_endpoint" => 'null',
         "db_host" => 'null',
         "db_username" => 'null',

@@ -15,5 +15,8 @@
         "lodash": "^4.17.19",
         "postcss": "^8.1.14",
         "redux": "^4.1.1"
+    },
+    "dependencies": {
+        "react-google-places-autocomplete": "^3.3.4"
     }
 }

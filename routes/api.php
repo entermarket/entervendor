@@ -6,21 +6,23 @@ use App\Http\Controllers\OtpController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LgaPriceController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\BankDetailController;
-use App\Http\Controllers\BrandController;
+use App\Http\Controllers\StoreOrderController;
 use App\Http\Controllers\SocialLoginController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderHistoryController;
-use App\Http\Controllers\StoreOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,7 +49,7 @@ Route::middleware('auth:admin_api')->group(function () {
     Route::get('admin/get/orders', [OrderController::class, 'adminindex']);
     Route::get('admin/get/assigned/orders', [OrderController::class, 'adminordersassigned']);
     Route::get('admin/get/pending/orders', [OrderController::class, 'adminorderspending']);
-   // Route::put('admin/update/order/status/{order}', [OrderController::class, 'updateorderstatus']);
+    // Route::put('admin/update/order/status/{order}', [OrderController::class, 'updateorderstatus']);
     Route::put('admin/update/order/status/{order}', [OrderController::class, 'assignlogistic']);
     Route::get('queryorder/{order}', [OrderController::class, 'queryorder']);
 
@@ -58,19 +60,22 @@ Route::middleware('auth:admin_api')->group(function () {
     Route::get('admin/notifications/mark', [NotificationController::class, 'adminmarkreadnotifications']);
     Route::get('admin/notifications/{id}/mark', [NotificationController::class, 'adminmarksinglenotification']);
     Route::delete('admin/notifications/delete', [NotificationController::class, 'admindestroy']);
-
 });
 
-    Route::apiResource('categories', CategoryController::class);
-    Route::apiResource('brands', BrandController::class);
+Route::apiResource('categories', CategoryController::class);
+Route::apiResource('brands', BrandController::class);
 
 
 Route::middleware(['auth:api'])->group(function () {
 
 
+    Route::get('get-coupon/{code}', [CouponController::class, 'show']);
+
+
     // Orders
     Route::apiResource('user/order/histories', OrderHistoryController::class);
     Route::apiResource('user/orders', OrderController::class);
+    Route::post('web-user/orders', [OrderController::class, 'webstore']);
 
 
 
@@ -106,13 +111,13 @@ Route::middleware(['auth:api'])->group(function () {
     // Transactions
     Route::apiResource('user/transactions', TransactionController::class);
     Route::post('transaction/initiate', [BankDetailController::class, 'makepayment']);
-    Route::get('transaction/verify/{reference}', [BankDetailController::class, 'verifytransaction']);
     Route::post('transaction/verify', [BankDetailController::class, 'transactionevent']);
     Route::post('payviame/payment', [BankDetailController::class, 'paybypayviame']);
-
+    Route::post('handle/payment', [BankDetailController::class, 'paybypayviame1']);
+    Route::get('refresh/token/{token}', [BankDetailController::class, 'refreshtoken']);
     Route::get('add-wishlist/{wishlist}', [WishlistController::class, 'addlisttocart']);
 });
-
+Route::get('transaction/verify/{reference}', [BankDetailController::class, 'verifytransaction']);
 
 //Store routes
 Route::get('store/categories/{store}', [StoreController::class, 'getstorecategories']);
@@ -128,7 +133,7 @@ Route::middleware('auth:store_api')->apiResource('storeorders', StoreOrderContro
 
 
 Route::apiResource('stores', StoreController::class);
-
+Route::get('get-stores', [StoreController::class, 'getstores']);
 
 // Products
 
@@ -167,7 +172,7 @@ Route::apiResource('otp', OtpController::class);
 Route::apiResource('users', UserController::class);
 
 Route::post('vendor/register', [VendorController::class, 'register']);
-Route::post('admin/register', [AdminController::class, 'register']);
+// Route::post('admin/register', [AdminController::class, 'register']);
 Route::post('admin/login', [AdminController::class, 'login']);
 
 // Vendor Routes
@@ -187,7 +192,22 @@ Route::middleware('auth:admin')->get('/admin', function (Request $request) {
 Route::middleware(['auth:admin'])->group(function () {
 
 
+    Route::get('get-active', [CouponController::class, 'getactive']);
+    Route::get('get-pending', [CouponController::class, 'getpending']);
+    Route::get('get-expired', [CouponController::class, 'getexpired']);
+
+
+    Route::apiResource('coupons', CouponController::class);
 });
+Route::put('change/store-status/{id}', [StoreController::class, 'changestatus']);
+//Admin
+Route::get('search/order', [OrderController::class, 'searchorder']);
+Route::post('search/order-by-date', [OrderController::class, 'searchbydate']);
+Route::get('search/pending/order', [OrderController::class, 'searchpendingorder']);
+Route::post('search/pending/order-by-date', [OrderController::class, 'searchpendingbydate']);
+Route::get('search/assigned/order', [OrderController::class, 'searchassignedorder']);
+Route::post('search/assigned/order-by-date', [OrderController::class, 'searchassignedbydate']);
+
 
 
 // Social Login routes
@@ -205,5 +225,16 @@ Route::post('password/reset', [UserController::class, 'changePasswordByOtp']);
 Route::get('get/banks', [BankDetailController::class, 'getbanks']);
 Route::get('get/bank/detail', [BankDetailController::class, 'getbankdetail']);
 Route::apiResource('bank/details', BankDetailController::class);
-
 Route::post('get/coordinates', [UserController::class, 'getcoordinates']);
+
+
+Route::get('get-lgas', [LgaPriceController::class, 'index']);
+Route::post('add-lga', [LgaPriceController::class, 'addlga']);
+Route::delete('delete-lga/{lga}', [LgaPriceController::class, 'deletelga']);
+
+
+Route::get('get-lga-prices/{id}', [LgaPriceController::class, 'getlgaprices']);
+Route::get('get-lga-price/{id}/{storeId}', [LgaPriceController::class, 'getlgaprice']);
+
+Route::apiResource('lga-prices', LgaPriceController::class);
+Route::get('mark-order-complete/{id}', [StoreController::class, 'markorder']);

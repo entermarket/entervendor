@@ -23,7 +23,7 @@ class CreateProductsTable extends Migration
             $table->string('product_no');
             $table->string('batch_no')->nullable();
             $table->integer('in_stock');
-            $table->foreignId('category_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('category_id')->constrained()->onDelete('cascade')->onUpdate('cascade')->default(1);
             $table->foreignId('store_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });

@@ -28,6 +28,6 @@ class Transaction extends Model
     }
     public function order()
     {
-        return $this->belongsTo(Order::class)->with('orderinfo', 'orderhistories');
+        return $this->belongsTo(Order::class,'order_id','order_no')->with('orderinfo', 'orderhistories');
     }
 }
