@@ -20,10 +20,12 @@ class BankDetailController extends Controller
 {
     public $user;
     public $api_key;
+    public $pin;
     public function __construct()
     {
         $this->user = auth('api')->user();
         $this->api_key = config('services.paystack.sk');
+        $this->pin = 4160;
     }
 
 
@@ -148,7 +150,7 @@ class BankDetailController extends Controller
                 $transaction = Transaction::where('reference', $reference)->first();
                 $payment = Payment::where('reference', $reference)->first();
                 if ($transaction) {
-                    if(strtolower($transaction->message) === 'verification successful'){
+                    if (strtolower($transaction->message) === 'verification successful') {
                         return response()->json([
                             'status' => true,
                             'message' => 'Verification successful',
@@ -161,9 +163,9 @@ class BankDetailController extends Controller
                     $transaction->save();
 
                     if ($response->json()['status'] == 'success') {
-                        $orders = Order::where('order_no',$transaction->order_id)->get();
+                        $orders = Order::where('order_no', $transaction->order_id)->get();
                         $firstorder = $orders[0];
-                        foreach($orders as $order) {
+                        foreach ($orders as $order) {
                             $order->payment_status = 'paid';
                             $order->save();
                         }
@@ -179,7 +181,7 @@ class BankDetailController extends Controller
                         $user = User::find($firstorder->user_id);
                         $cartservice->clearcart($user);
                         $detail = [
-                            'message' => 'Your order with order number #'. $firstorder->order_no. ' has been created and is being processed',
+                            'message' => 'Your order with order number #' . $firstorder->order_no . ' has been created and is being processed',
                             'url' => 'https://entermarket.net/profile?showing=4'
                         ];
 
@@ -195,7 +197,7 @@ class BankDetailController extends Controller
                         $order = Order::find($transaction->order_id);
                         $order->payment_status = 'failed';
                         $order->save();
-                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status'=> 'failed']);
+                        StoreOrder::where('order_no', $order->order_no)->update(['payment_status' => 'failed']);
                     }
 
                     return response()->json([
@@ -214,15 +216,20 @@ class BankDetailController extends Controller
                             $body = [
                                 'network' => strtoupper($payment->network),
                                 'amount' => $payment->amount * 100,
-                                'mobile_number' => $payment->number
+                                'mobile_number' => $payment->number,
+                                'pin' => $this->pin
                             ];
 
                             $response =  Http::withHeaders([
                                 'Authorization' => 'Bearer ' . $payment->token,
                             ])->post(
-                                'https://api.payviame.com/api/buy-airtime',
+                                'https://apis.payviame.com/api/buy-airtime',
                                 $body
                             );
+
+                            if ($response->status() !== 200 && $response->status() !== 201) {
+                                return response(['message' => $response['message']], 500);
+                            }
                             $responsedata = $response->json();
                             if ($responsedata['status'] === 'success') {
                                 $payment->status = $response->json()['status'];
@@ -240,15 +247,19 @@ class BankDetailController extends Controller
                             $body = [
                                 'paymentCode' => $payment->paymentCode,
                                 'amount' => $payment->amount * 100,
-                                'mobile_number' => $payment->number
+                                'mobile_number' => $payment->number,
+                                'pin' => $this->pin
                             ];
 
                             $response =  Http::withHeaders([
                                 'Authorization' => 'Bearer ' . $payment->token,
                             ])->post(
-                                'https://api.payviame.com/api/buy-data-2',
+                                'https://apis.payviame.com/api/buy-data-2',
                                 $body
                             );
+                            if ($response->status() !== 200) {
+                                return response(['message' => $response['message']], 500);
+                            }
                             $responsedata = $response->json();
                             if ($responsedata && $responsedata['status'] === 'success') {
                                 $payment->status = $response->json()['status'];
@@ -266,15 +277,19 @@ class BankDetailController extends Controller
                             $body = [
                                 'customerid' => $payment->customerid,
                                 'amount' => $payment->amount * 100,
-                                'paymentCode' => $payment->paymentCode
+                                'paymentCode' => $payment->paymentCode,
+                                'pin' => $this->pin
                             ];
 
                             $response =  Http::withHeaders([
                                 'Authorization' => 'Bearer ' . $payment->token,
                             ])->post(
-                                'https://api.payviame.com/api/buy-electricity',
+                                'https://apis.payviame.com/api/buy-electricity',
                                 $body
                             );
+                            if ($response->status() !== 200) {
+                                return response(['message' => $response['message']], 500);
+                            }
                             $responsedata = $response->json();
                             if ($responsedata && $responsedata['status'] === 'success') {
                                 $payment->status = $response->json()['status'];
@@ -292,15 +307,19 @@ class BankDetailController extends Controller
                             $body = [
                                 'customerid' => $payment->customerid,
                                 'amount' => $payment->amount * 100,
-                                'paymentCode' => $payment->paymentCode
+                                'paymentCode' => $payment->paymentCode,
+                                'pin' => $this->pin
                             ];
 
                             $response =  Http::withHeaders([
                                 'Authorization' => 'Bearer ' . $payment->token,
                             ])->post(
-                                'https://api.payviame.com/api/buy-internet',
+                                'https://apis.payviame.com/api/buy-internet',
                                 $body
                             );
+                            if ($response->status() !== 200) {
+                                return response(['message' => $response['message']], 500);
+                            }
                             $responsedata = $response->json();
                             if ($responsedata && $responsedata['status'] === 'success') {
                                 $payment->status = $response->json()['status'];
@@ -319,15 +338,19 @@ class BankDetailController extends Controller
                             $body = [
                                 'customerid' => $payment->customerid,
                                 'amount' => $payment->amount * 100,
-                                'paymentCode' => $payment->paymentCode
+                                'paymentCode' => $payment->paymentCode,
+                                'pin' => $this->pin
                             ];
 
                             $response =  Http::withHeaders([
                                 'Authorization' => 'Bearer ' . $payment->token,
                             ])->post(
-                                'https://api.payviame.com/api/buy-tv',
+                                'https://apis.payviame.com/api/buy-tv',
                                 $body
                             );
+                            if ($response->status() !== 200) {
+                                return response(['message' => $response['message']], 500);
+                            }
                             $responsedata = $response->json();
                             if ($responsedata && $responsedata['status'] === 'success') {
                                 $payment->status = $response->json()['status'];
@@ -345,15 +368,19 @@ class BankDetailController extends Controller
                             $body = [
                                 'customerid' => $payment->customerid,
                                 'amount' => $payment->amount * 100,
-                                'paymentCode' => $payment->paymentCode
+                                'paymentCode' => $payment->paymentCode,
+                                'pin' => $this->pin
                             ];
 
                             $response =  Http::withHeaders([
                                 'Authorization' => 'Bearer ' . $payment->token,
                             ])->post(
-                                'https://api.payviame.com/api/bet',
+                                'https://apis.payviame.com/api/bet',
                                 $body
                             );
+                            if ($response->status() !== 200) {
+                                return response(['message' => $response['message']], 500);
+                            }
                             $responsedata = $response->json();
                             if ($responsedata && $responsedata['status'] === 'success') {
                                 $payment->status = $response->json()['status'];
@@ -371,15 +398,19 @@ class BankDetailController extends Controller
                             $body = [
                                 'network' => strtoupper($payment->network),
                                 'amount' => $payment->amount * 100,
-                                'mobile_number' => $payment->number
+                                'mobile_number' => $payment->number,
+                                'pin' => $this->pin
                             ];
 
                             $response =  Http::withHeaders([
                                 'Authorization' => 'Bearer ' . $payment->token,
                             ])->post(
-                                'https://api.payviame.com/api/buy-data',
+                                'https://apis.payviame.com/api/buy-data',
                                 $body
                             );
+                            if ($response->status() !== 200) {
+                                return response(['message' => $response['message']], 500);
+                            }
                             $responsedata = $response->json();
                             if ($responsedata && $responsedata['status'] === 'success') {
                                 $payment->status = $response->json()['status'];
@@ -397,15 +428,19 @@ class BankDetailController extends Controller
                             $body = [
                                 'network' => strtoupper($payment->network),
                                 'amount' => $payment->amount * 100,
-                                'mobile_number' => $payment->number
+                                'mobile_number' => $payment->number,
+                                'pin' => $this->pin
                             ];
 
                             $response =  Http::withHeaders([
                                 'Authorization' => 'Bearer ' . $payment->token,
                             ])->post(
-                                'https://api.payviame.com/api/buy-data',
+                                'https://apis.payviame.com/api/buy-data',
                                 $body
                             );
+                            if ($response->status() !== 200) {
+                                return response(['message' => $response['message']], 500);
+                            }
                             $responsedata = $response->json();
                             if ($responsedata && $responsedata['status'] === 'success') {
                                 $payment->status = $response->json()['status'];
@@ -458,6 +493,9 @@ class BankDetailController extends Controller
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json'
         ])->post('https://apis.payviame.com/api/auth/refresh');
+        if ($response->status() !== 200) {
+            return response(['message' => $response['message']], 500);
+        }
         return  $responsedata = $response->json()['access_token'];
     }
 
@@ -546,6 +584,30 @@ class BankDetailController extends Controller
             $payment->save();
 
             return $responsedata;
+        });
+    }
+    public function paybypayviame1(Request $request)
+    {
+
+
+        return DB::transaction(function () use ($request) {
+            $payment = $this->user->payments()->create([
+                'type' => $request->type,
+                'amount' => $request->amount,
+                'service' => $request->service,
+                'network' => $request->network,
+                'number' => $request->number,
+                'service_id' => $request->service_id,
+                'status' => 'pending',
+                'token' => $request->token,
+                'paymentCode' => $request->paymentCode,
+                'customerid' => $request->customerid
+
+            ]);
+
+            $payment->reference = $request->reference;
+            $payment->save();
+            return   $this->verifytransaction($request->reference);
         });
     }
 }
